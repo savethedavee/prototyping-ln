@@ -13,7 +13,7 @@
 		</p>
 		<h1 class="mt-2 text-2xl font-bold text-gray-900">Modell-Detail</h1>
 		<p class="mt-3 text-gray-500">Wird in Schritt 2 mit Mock-Daten befüllt.</p>
-		<a href="/results" class="mt-6 inline-block text-sm text-blue-600 hover:underline">
+		<a href="/results" class="mt-6 inline-block text-sm text-primary hover:underline">
 			← Zurück zur Ergebnisliste
 		</a>
 	</div>

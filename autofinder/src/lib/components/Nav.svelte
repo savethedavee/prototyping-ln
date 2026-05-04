@@ -6,30 +6,30 @@
 	<div class="mx-auto max-w-6xl px-4">
 		<div class="flex h-16 items-center justify-between">
 			<a href="/" class="text-xl font-bold tracking-tight text-gray-900">
-				Auto<span class="text-blue-600">Finder</span>
+				Auto<span class="text-primary">Finder</span>
 			</a>
 
 			<ul class="flex items-center gap-6 text-sm font-medium">
 				<li>
 					<a
 						href="/"
-						class="transition-colors hover:text-blue-600"
-						class:text-blue-600={$page.url.pathname === '/'}
+						class="transition-colors hover:text-primary"
+						class:text-primary={$page.url.pathname === '/'}
 						class:text-gray-600={$page.url.pathname !== '/'}
 					>
 						Start
 					</a>
 				</li>
 				<li>
-					<a href="/#how-it-works" class="text-gray-600 transition-colors hover:text-blue-600">
+					<a href="/#how-it-works" class="text-gray-600 transition-colors hover:text-primary">
 						So funktioniert's
 					</a>
 				</li>
 				<li>
 					<a
 						href="/saved-searches"
-						class="transition-colors hover:text-blue-600"
-						class:text-blue-600={$page.url.pathname.startsWith('/saved-searches')}
+						class="transition-colors hover:text-primary"
+						class:text-primary={$page.url.pathname.startsWith('/saved-searches')}
 						class:text-gray-600={!$page.url.pathname.startsWith('/saved-searches')}
 					>
 						Meine Suchen
@@ -38,7 +38,7 @@
 				<li>
 					<a
 						href="/questionnaire"
-						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						class="rounded-card bg-primary px-4 py-2 text-white transition-colors hover:bg-primary-dark"
 					>
 						Auto finden
 					</a>
