@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   Design Tokens  –  alle globalen Werte an einem Ort.
+   Tailwind-Klassen (text-primary, bg-primary-dark …) lesen
+   diese Variablen über tailwind.config.js.
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+	:root {
+		/* Brand */
+		--color-primary:      #f97316;   /* orange-500 */
+		--color-primary-dark: #ea580c;   /* orange-600 */
+		--color-primary-light:#fff7ed;   /* orange-50  */
+
+		/* Semantic status */
+		--color-success: #16a34a;
+		--color-error:   #dc2626;
+		--color-info:    #2563eb;
+
+		/* Shape */
+		--radius-card: 0.75rem;
+
+		/* Shadow */
+		--shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	}
+}
