@@ -1,0 +1,36 @@
+{
+	"name": "autofinder",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.0.0",
+		"@sveltejs/adapter-netlify": "^4.3.0",
+		"@sveltejs/kit": "^2.16.0",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"autoprefixer": "^10.4.0",
+		"eslint": "^9.0.0",
+		"eslint-plugin-svelte": "^2.46.0",
+		"globals": "^15.0.0",
+		"postcss": "^8.4.0",
+		"prettier": "^3.0.0",
+		"prettier-plugin-svelte": "^3.3.0",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"tailwindcss": "^3.4.0",
+		"typescript": "^5.0.0",
+		"vite": "^5.0.0"
+	},
+	"dependencies": {
+		"mongodb": "^6.0.0"
+	},
+	"type": "module"
+}
