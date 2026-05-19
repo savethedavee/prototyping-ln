@@ -2,46 +2,9 @@
 	import { get } from 'svelte/store';
 	import { searchInputs } from '$lib/stores/questionnaire';
 	import { mockCars } from '$lib/data/mockCars';
+	import { matchScore } from '$lib/utils/matching';
 	import CarCard from '$lib/components/CarCard.svelte';
-	import type { CarModel, CarModelWithScore, SearchInputs } from '$lib/types';
-
-	function matchScore(car: CarModel, inputs: SearchInputs): number {
-		if (car.priceFrom > inputs.budgetMax) return 0;
-		if (inputs.drivetrain.length > 0 && !inputs.drivetrain.includes(car.drivetrain)) return 0;
-		if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) {
-			return 0;
-		}
-
-		let score = 50;
-
-		// Feature match (up to 30 pts)
-		if (inputs.features.length > 0) {
-			const matches = inputs.features.filter((f) => car.features.includes(f)).length;
-			score += (matches / inputs.features.length) * 30;
-		} else {
-			// No features selected: reward cars with more features slightly
-			score += Math.min(18, car.features.length * 1.5);
-		}
-
-		// Brand preference bonus
-		if (inputs.brands && inputs.brands.length > 0 && inputs.brands.includes(car.brand)) {
-			score += 12;
-		}
-
-		// Priority: low consumption → prefer electric/hybrid
-		if (inputs.priorities.consumption >= 4) {
-			if (car.drivetrain === 'electric') score += 7;
-			else if (car.drivetrain === 'hybrid') score += 4;
-		}
-
-		// Priority: high power
-		if (inputs.priorities.power >= 4 && car.power >= 200) score += 5;
-
-		// Budget comfort: car within range
-		if (car.priceFrom >= inputs.budgetMin && car.priceFrom <= inputs.budgetMax) score += 3;
-
-		return Math.min(100, Math.round(score));
-	}
+	import type { CarModelWithScore } from '$lib/types';
 
 	const inputs = get(searchInputs);
 
