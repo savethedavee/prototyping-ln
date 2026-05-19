@@ -70,8 +70,8 @@ function scoreForUsage(car: CarModel, usage: string): number {
 }
 
 export function matchScore(car: CarModel, inputs: SearchInputs): number {
-	// Harte Filter
-	if (car.priceFrom > inputs.budgetMax) return 0;
+	// Harte Filter (100000 = "100'000+" → kein oberes Limit)
+	if (inputs.budgetMax < 100000 && car.priceFrom > inputs.budgetMax) return 0;
 	if (inputs.drivetrain.length > 0 && !inputs.drivetrain.includes(car.drivetrain)) return 0;
 	if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) {
 		return 0;
@@ -108,7 +108,8 @@ export function matchScore(car: CarModel, inputs: SearchInputs): number {
 	if (inputs.priorities.power >= 4 && car.power >= 200) score += 4;
 
 	// 5) Budget-Passgenauigkeit (bis 5 Punkte)
-	if (car.priceFrom >= inputs.budgetMin && car.priceFrom <= inputs.budgetMax) score += 5;
+	const withinMax = inputs.budgetMax >= 100000 || car.priceFrom <= inputs.budgetMax;
+	if (car.priceFrom >= inputs.budgetMin && withinMax) score += 5;
 
 	return Math.min(100, score);
 }
