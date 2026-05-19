@@ -1,11 +1,13 @@
 export interface CarModel {
 	_id?: string;
+	slug: string;
 	name: string;
 	brand: string;
 	type: string;
 	drivetrain: 'hybrid' | 'electric' | 'combustion';
+	region: 'europe' | 'asia' | 'america';
 	priceFrom: number;
-	consumption: number; // L/100km (0 for electric)
+	consumption: number; // L/100km or kWh/100km for electric
 	power: number; // PS
 	trunkSize: number; // Liter
 	co2: number; // g/km
@@ -14,6 +16,7 @@ export interface CarModel {
 	features: string[];
 	imageUrl?: string;
 	description: string;
+	detailText: string;
 }
 
 export interface SearchPriorities {
@@ -29,7 +32,8 @@ export interface SearchInputs {
 	budgetMax: number;
 	usage: string[];
 	drivetrain: string[];
-	brands: string[];
+	brandRegion?: string;
+	brands?: string[];
 	features: string[];
 	priorities: SearchPriorities;
 }

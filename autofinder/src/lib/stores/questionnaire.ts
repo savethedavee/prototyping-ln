@@ -4,10 +4,11 @@ import type { SearchInputs } from '$lib/types';
 export const TOTAL_STEPS = 6;
 
 export const defaultInputs: SearchInputs = {
-	budgetMin: 10000,
-	budgetMax: 50000,
+	budgetMin: 25000,
+	budgetMax: 45000,
 	usage: [],
 	drivetrain: [],
+	brandRegion: undefined,
 	brands: [],
 	features: [],
 	priorities: {
