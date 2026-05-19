@@ -42,14 +42,24 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 - [x] Routen-Stubs für alle Seiten
 - [x] Git-Repo initialisiert, erster Commit
 
-### Schritt 2 — Statische Seiten ohne DB ⏳ ALS NÄCHSTES
-- [ ] Landing Page mit CTA „Auto finden"
-- [ ] Fragebogen-Wizard: alle 6 Schritte als eigene Components
-- [ ] Wizard-Zustand in einem Svelte-Store (vor dem Speichern in DB)
-- [ ] Progress-Bar im Wizard-Header
-- [ ] Ergebnisliste mit hardcodierten Mock-Daten (10–15 Modelle)
-- [ ] Modell-Detail-Seite mit Mock-Daten
-- [ ] Klick-Demo durchspielbar: Landing → Fragebogen → Ergebnis → Detail
+### Schritt 2 — Statische Seiten ohne DB ✅ ERLEDIGT
+- [x] Landing Page mit CTA „Auto finden", 3-Schritt-Erklärung, Footer
+- [x] Fragebogen-Wizard: alle 6 Schritte als eigene Komponenten unter `/finder/`
+- [x] `<QuestionnaireFrame>`-Wrapper mit Mini-Nav, Progress-Bar, Footer
+- [x] Wizard-Zustand im Svelte-Store (`src/lib/stores/questionnaire.ts`)
+- [x] 15 Mock-Modelle als TypeScript-Array (`src/lib/data/mockCars.ts`)
+- [x] Ergebnisliste (`/ergebnisse`) mit client-seitiger Match-Score-Berechnung
+- [x] `<CarCard>`- und `<MatchScore>`-Komponenten
+- [x] Loading-Transition (`/berechnung`) mit CSS-Animation und Redirect
+- [x] Modell-Detail (`/modell/[slug]`) mit „Was das für dich bedeutet"-Block
+- [x] So funktioniert's-Seite (`/so-funktionierts`) vereinfacht
+- [x] Meine Suchen (`/meine-suchen`) als Placeholder
+- [x] Klick-Demo durchspielbar: Landing → Fragebogen → Ergebnis → Detail
+
+#### Offene Punkte aus Schritt 2 — vor Schritt 3 einbauen
+- [ ] **Gebraucht / Neu** — Frage im Fragebogen ergänzen (z.B. Step 1 oder neuer Step). Feld `condition: "new" | "used" | "any"` im Store und in `SearchInputs` aufnehmen, Mock-Daten anpassen
+- [ ] **Karosserieform (Aufbau)** — Limousine, Kombi, SUV, Van, Coupé usw. als Filterfrage ergänzen. Feld `bodyType` in `CarModel` und `SearchInputs` aufnehmen
+- [ ] **Farbe** — Bevorzugte Farbe(n) als optionaler Step. Feld `colors: string[]` in `CarModel`, Filteroption im Fragebogen
 
 ### Schritt 3 — MongoDB anbinden
 - [ ] MongoDB-Atlas-Cluster aufsetzen, `MONGODB_URI` als env var
