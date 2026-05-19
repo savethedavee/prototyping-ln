@@ -14,7 +14,7 @@
 	{@render children()}
 {:else}
 	<Nav />
-	<main class="min-h-[calc(100vh-4rem)] bg-gray-50">
+	<main class="flex min-h-[calc(100vh-4rem)] flex-col bg-gray-50">
 		{@render children()}
 	</main>
 {/if}
