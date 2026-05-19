@@ -21,24 +21,29 @@
 					</a>
 				</li>
 				<li>
-					<a href="/#how-it-works" class="text-gray-600 transition-colors hover:text-primary">
+					<a
+						href="/so-funktionierts"
+						class="transition-colors hover:text-primary"
+						class:text-primary={$page.url.pathname === '/so-funktionierts'}
+						class:text-gray-600={$page.url.pathname !== '/so-funktionierts'}
+					>
 						So funktioniert's
 					</a>
 				</li>
 				<li>
 					<a
-						href="/saved-searches"
+						href="/meine-suchen"
 						class="transition-colors hover:text-primary"
-						class:text-primary={$page.url.pathname.startsWith('/saved-searches')}
-						class:text-gray-600={!$page.url.pathname.startsWith('/saved-searches')}
+						class:text-primary={$page.url.pathname.startsWith('/meine-suchen')}
+						class:text-gray-600={!$page.url.pathname.startsWith('/meine-suchen')}
 					>
 						Meine Suchen
 					</a>
 				</li>
 				<li>
 					<a
-						href="/questionnaire"
-						class="rounded-card bg-primary px-4 py-2 text-white transition-colors hover:bg-primary-dark"
+						href="/finder/budget"
+						class="rounded-card bg-gray-900 px-4 py-2 text-white transition-colors hover:bg-gray-700"
 					>
 						Auto finden
 					</a>
