@@ -8,6 +8,10 @@
    diese Variablen über tailwind.config.js.
    ───────────────────────────────────────────────────────────── */
 @layer base {
+	html {
+		scrollbar-gutter: stable;
+	}
+
 	:root {
 		/* Brand */
 		--color-primary:      #f97316;   /* orange-500 */
