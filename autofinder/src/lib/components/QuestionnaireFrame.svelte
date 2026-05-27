@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { TOTAL_STEPS } from '$lib/stores/questionnaire';
 
 	interface Props {
 		currentStep: number;
@@ -10,6 +11,7 @@
 		nextLabel?: string;
 		skipHref?: string;
 		canNext?: boolean;
+		onReset?: () => void;
 	}
 
 	let {
@@ -20,11 +22,11 @@
 		nextHref,
 		nextLabel = 'Weiter →',
 		skipHref,
-		canNext = true
+		canNext = true,
+		onReset
 	}: Props = $props();
 
-	const TOTAL = 6;
-	const progress = $derived((currentStep / TOTAL) * 100);
+	const progress = $derived((currentStep / TOTAL_STEPS) * 100);
 </script>
 
 <div class="flex min-h-screen flex-col bg-gray-50">
@@ -45,7 +47,7 @@
 		<div class="mx-auto max-w-3xl px-4 py-3">
 			<div class="mb-2 flex items-center justify-between">
 				<span class="text-sm text-gray-700">
-					Schritt {currentStep} von {TOTAL}
+					Schritt {currentStep} von {TOTAL_STEPS}
 					{#if optional}
 						<span class="ml-1 font-normal text-gray-400">· optional</span>
 					{/if}
@@ -69,7 +71,7 @@
 	</main>
 
 	<!-- Footer -->
-	<footer class="border-t border-gray-200 bg-white">
+	<footer class="sticky bottom-0 z-10 border-t border-gray-200 bg-white">
 		<div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
 			{#if backHref}
 				<a href={backHref} class="text-sm text-gray-500 transition-colors hover:text-gray-900">
@@ -80,6 +82,11 @@
 			{/if}
 
 			<div class="flex items-center gap-4">
+				{#if onReset}
+					<button onclick={onReset} class="text-sm text-gray-400 hover:text-gray-600">
+						Zurücksetzen
+					</button>
+				{/if}
 				{#if skipHref}
 					<a href={skipHref} class="text-sm text-gray-400 underline hover:text-gray-600">
 						Überspringen

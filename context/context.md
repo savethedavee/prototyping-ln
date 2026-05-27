@@ -25,11 +25,11 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 
 ### Fragebogen-Schritte
 
-1. **Budget** — Range-Slider, CHF 5'000–100'000+
+1. **Budget** — Range-Slider CHF 5'000–100'000+, Pill-Buttons Neu/Gebraucht/Egal
 2. **Nutzungszweck** — Multi-Karten: Pendeln, Familie, Freizeit, Stadt, Gewerbe, Sport
-3. **Antrieb** — Karten: Verbrenner, Hybrid, Elektro
-4. **Marken & Land** *(optional, mit Skip)* — Region + konkrete Marken
-5. **Ausstattung** — Multi-Select-Chips, gruppiert in Komfort / Sicherheit / Infotainment / Praktisches
+3. **Antrieb & Aufbau** — Antrieb (Verbrenner/Hybrid/Elektro) + Karosserieform (SUV/Kombi/…)
+4. **Marken** — Region + konkrete Marken (kein Skip, kein Pflichtfeld)
+5. **Ausstattung & Farbe** — Feature-Chips nach Kategorie + Farbauswahl mit Egal-Option
 6. **Prioritäten** — 5 Slider 1–5: Verbrauch, Leistung, Komfort, Sicherheit, Design
 
 ---
@@ -56,10 +56,10 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 - [x] Meine Suchen (`/meine-suchen`) als Placeholder
 - [x] Klick-Demo durchspielbar: Landing → Fragebogen → Ergebnis → Detail
 
-#### Offene Punkte aus Schritt 2 — vor Schritt 3 einbauen
-- [ ] **Gebraucht / Neu** — Frage im Fragebogen ergänzen (z.B. Step 1 oder neuer Step). Feld `condition: "new" | "used" | "any"` im Store und in `SearchInputs` aufnehmen, Mock-Daten anpassen
-- [ ] **Karosserieform (Aufbau)** — Limousine, Kombi, SUV, Van, Coupé usw. als Filterfrage ergänzen. Feld `bodyType` in `CarModel` und `SearchInputs` aufnehmen
-- [ ] **Farbe** — Bevorzugte Farbe(n) als optionaler Step. Feld `colors: string[]` in `CarModel`, Filteroption im Fragebogen
+#### Offene Punkte aus Schritt 2 — erledigt
+- [x] **Gebraucht / Neu** — Pill-Buttons (Neu / Gebraucht / Egal) in Step 1 (Budget).
+- [x] **Karosserieform** — In Step 3 integriert (unterer Abschnitt "Welche Karosserieform passt zu dir?").
+- [x] **Farbe** — In Step 5 integriert (Abschnitt "Farbe" mit Egal-Option, die per default aktiv ist).
 
 ### Schritt 3 — MongoDB anbinden
 - [ ] MongoDB-Atlas-Cluster aufsetzen, `MONGODB_URI` als env var
@@ -195,8 +195,8 @@ function matchScore(model: CarModel, inputs: SearchInputs): number {
 | `/finder/budget` | Fragebogen Step 1 |
 | `/finder/nutzung` | Fragebogen Step 2 |
 | `/finder/antrieb` | Fragebogen Step 3 |
-| `/finder/marken` | Fragebogen Step 4 (optional) |
-| `/finder/ausstattung` | Fragebogen Step 5 |
+| `/finder/marken` | Fragebogen Step 4 |
+| `/finder/ausstattung` | Fragebogen Step 5 (inkl. Farbe) |
 | `/finder/prioritaeten` | Fragebogen Step 6 |
 | `/berechnung` | Loading-Transition |
 | `/ergebnisse?searchId=...` | Ergebnisliste / Empty State |
@@ -225,8 +225,16 @@ context/
 
 ---
 
+## QuestionnaireFrame — Konventionen
+
+- `onReset` → setzt alle Felder des aktuellen Steps zurück; wird im sticky Footer als "Zurücksetzen"-Link angezeigt
+- `nextHref` / `nextLabel` → Weiter-Button im sticky Footer; letzter Step nutzt `nextLabel="Empfehlungen ansehen →"`
+- `TOTAL_STEPS` kommt aus dem Store (`$lib/stores/questionnaire`), nicht hardcodiert im Frame
+- Footer ist `sticky bottom-0 z-10` — auf Seiten ohne Scrollbar kein Layout-Shift (scrollbar-gutter: stable noch ausstehend)
+
 ## Notizen für künftige Sessions
 
 - **Vor jedem grösseren Schritt:** kurz halten und bestätigen lassen, bevor weitergeht
 - **Bei Unklarheiten:** 2–3 Verständnisfragen stellen statt raten
 - **KI-Einsatz** muss in der finalen Projektdoku deklariert werden
+- **Scrollbar-Layout-Shift:** `scrollbar-gutter: stable` auf `html` ist als Fix bekannt, noch nicht umgesetzt

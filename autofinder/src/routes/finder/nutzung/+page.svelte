@@ -48,6 +48,10 @@
 		});
 	}
 
+	function reset() {
+		searchInputs.update((s) => ({ ...s, usage: [] }));
+	}
+
 	let canNext = $derived($searchInputs.usage.length > 0);
 </script>
 
@@ -60,6 +64,7 @@
 	backHref="/finder/budget"
 	nextHref="/finder/antrieb"
 	{canNext}
+	onReset={reset}
 >
 	<h1 class="text-2xl font-medium text-gray-900">Wofür brauchst du das Auto?</h1>
 	<p class="mt-2 text-sm text-gray-500">Mehrfachauswahl möglich — wähle alles, was zutrifft.</p>

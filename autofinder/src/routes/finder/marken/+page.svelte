@@ -15,16 +15,23 @@
 		'Ford', 'Fiat', 'Opel', 'Peugeot', 'Seat', 'Kia'
 	];
 
+	let selectedBrands = $derived($searchInputs.brands ?? []);
+
 	function setRegion(key: string) {
 		searchInputs.update((s) => ({ ...s, brandRegion: key }));
 	}
 
 	function toggleBrand(brand: string) {
 		searchInputs.update((s) => {
-			const brands = s.brands ?? [];
-			const next = brands.includes(brand) ? brands.filter((b) => b !== brand) : [...brands, brand];
+			const next = selectedBrands.includes(brand)
+				? selectedBrands.filter((b) => b !== brand)
+				: [...selectedBrands, brand];
 			return { ...s, brands: next };
 		});
+	}
+
+	function reset() {
+		searchInputs.update((s) => ({ ...s, brandRegion: undefined, brands: [] }));
 	}
 </script>
 
@@ -34,17 +41,13 @@
 
 <QuestionnaireFrame
 	currentStep={4}
-	optional={true}
 	backHref="/finder/antrieb"
 	nextHref="/finder/ausstattung"
-	skipHref="/finder/ausstattung"
+	onReset={reset}
 >
 	<h1 class="text-2xl font-medium text-gray-900">Hast du eine Marken-Präferenz?</h1>
-	<p class="mt-2 text-sm text-gray-500">
-		Dieser Schritt ist optional — du kannst ihn auch überspringen.
-	</p>
+	<p class="mt-2 text-sm text-gray-500">Mehrfachauswahl möglich. Kein Muss.</p>
 
-	<!-- Region -->
 	<h2 class="mt-10 text-sm font-medium uppercase tracking-wider text-gray-400">Region</h2>
 	<div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
 		{#each REGIONS as r}
@@ -76,11 +79,10 @@
 		{/each}
 	</div>
 
-	<!-- Brands -->
 	<h2 class="mt-8 text-sm font-medium uppercase tracking-wider text-gray-400">Konkrete Marken</h2>
 	<div class="mt-3 flex flex-wrap gap-2">
 		{#each BRANDS as brand}
-			{@const selected = ($searchInputs.brands ?? []).includes(brand)}
+			{@const selected = selectedBrands.includes(brand)}
 			<button
 				onclick={() => toggleBrand(brand)}
 				class="rounded-full border px-3 py-1.5 text-sm transition-all"

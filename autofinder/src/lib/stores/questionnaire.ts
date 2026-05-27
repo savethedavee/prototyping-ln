@@ -6,11 +6,14 @@ export const TOTAL_STEPS = 6;
 export const defaultInputs: SearchInputs = {
 	budgetMin: 25000,
 	budgetMax: 45000,
+	condition: 'any',
 	usage: [],
 	drivetrain: [],
 	brandRegion: undefined,
 	brands: [],
 	features: [],
+	bodyTypes: [],
+	colors: [],
 	priorities: {
 		consumption: 3,
 		power: 3,

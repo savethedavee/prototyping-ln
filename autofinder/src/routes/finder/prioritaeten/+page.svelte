@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
 	import { searchInputs } from '$lib/stores/questionnaire';
-	import { goto } from '$app/navigation';
 	import QuestionnaireFrame from '$lib/components/QuestionnaireFrame.svelte';
 
 	const SLIDERS = [
@@ -21,8 +20,8 @@
 		searchInputs.update((s) => ({ ...s, priorities: { ...values } }));
 	});
 
-	function handleNext() {
-		goto('/berechnung');
+	function reset() {
+		values = { consumption: 3, power: 3, comfort: 3, safety: 3, design: 3 };
 	}
 </script>
 
@@ -30,7 +29,13 @@
 	<title>Prioritäten – AutoFinder</title>
 </svelte:head>
 
-<QuestionnaireFrame currentStep={6} backHref="/finder/ausstattung">
+<QuestionnaireFrame
+	currentStep={6}
+	backHref="/finder/ausstattung"
+	nextHref="/berechnung"
+	nextLabel="Empfehlungen ansehen →"
+	onReset={reset}
+>
 	<h1 class="text-2xl font-medium text-gray-900">Was zählt für dich am meisten?</h1>
 	<p class="mt-2 text-sm text-gray-500">Stelle die Schieberegler auf 1 (unwichtig) bis 5 (sehr wichtig).</p>
 
@@ -56,15 +61,6 @@
 		{/each}
 	</div>
 
-	<!-- Override next button via action -->
-	<div class="mt-10 flex justify-end">
-		<button
-			onclick={handleNext}
-			class="rounded-card bg-gray-900 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
-		>
-			Empfehlungen ansehen →
-		</button>
-	</div>
 </QuestionnaireFrame>
 
 <style>

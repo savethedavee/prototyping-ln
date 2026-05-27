@@ -4,6 +4,9 @@ export interface CarModel {
 	name: string;
 	brand: string;
 	type: string;
+	bodyType: 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
+	condition: 'new' | 'used';
+	colors: string[];
 	drivetrain: 'hybrid' | 'electric' | 'combustion';
 	region: 'europe' | 'asia' | 'america';
 	priceFrom: number;
@@ -30,11 +33,14 @@ export interface SearchPriorities {
 export interface SearchInputs {
 	budgetMin: number;
 	budgetMax: number;
+	condition: 'new' | 'used' | 'any';
 	usage: string[];
 	drivetrain: string[];
 	brandRegion?: string;
 	brands?: string[];
 	features: string[];
+	bodyTypes: string[];
+	colors: string[];
 	priorities: SearchPriorities;
 }
 

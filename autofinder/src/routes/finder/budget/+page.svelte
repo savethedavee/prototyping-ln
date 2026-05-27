@@ -32,13 +32,25 @@
 		if (v >= MAX) return "100'000+";
 		return `CHF ${v.toLocaleString('de-CH')}`;
 	}
+
+	function reset() {
+		minVal = 25000;
+		maxVal = 45000;
+		searchInputs.update((s) => ({ ...s, budgetMin: 25000, budgetMax: 45000, condition: 'any' }));
+	}
+
+	const CONDITIONS = [
+		{ key: 'new' as const, label: 'Neu' },
+		{ key: 'used' as const, label: 'Gebraucht' },
+		{ key: 'any' as const, label: 'Egal' }
+	];
 </script>
 
 <svelte:head>
 	<title>Budget – AutoFinder</title>
 </svelte:head>
 
-<QuestionnaireFrame currentStep={1} nextHref="/finder/nutzung">
+<QuestionnaireFrame currentStep={1} nextHref="/finder/nutzung" onReset={reset}>
 	<h1 class="text-2xl font-medium text-gray-900">Was ist dein Budget?</h1>
 	<p class="mt-2 text-sm text-gray-500">Wir zeigen dir nur Modelle, die in deinem Preisrahmen liegen.</p>
 
@@ -83,6 +95,29 @@
 	<div class="mt-1 flex justify-between text-xs text-gray-400">
 		<span>CHF 5'000</span>
 		<span>CHF 100'000+</span>
+	</div>
+
+	<!-- Condition -->
+	<div class="mt-10">
+		<p class="text-sm font-medium text-gray-700">Neu oder Gebraucht?</p>
+		<div class="mt-3 flex gap-3">
+			{#each CONDITIONS as opt}
+				{@const selected = $searchInputs.condition === opt.key}
+				<button
+					onclick={() => searchInputs.update((s) => ({ ...s, condition: opt.key }))}
+					class="rounded-full border px-5 py-2 text-sm font-medium transition-all"
+					class:border-gray-900={selected}
+					class:bg-gray-900={selected}
+					class:text-white={selected}
+					class:border-gray-200={!selected}
+					class:bg-white={!selected}
+					class:text-gray-700={!selected}
+					class:hover:border-gray-400={!selected}
+				>
+					{opt.label}
+				</button>
+			{/each}
+		</div>
 	</div>
 
 	<!-- Tip -->

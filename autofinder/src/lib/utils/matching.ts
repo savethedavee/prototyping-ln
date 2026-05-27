@@ -76,6 +76,8 @@ export function matchScore(car: CarModel, inputs: SearchInputs): number {
 	if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) {
 		return 0;
 	}
+	if (inputs.condition !== 'any' && car.condition !== inputs.condition) return 0;
+	if (inputs.bodyTypes.length > 0 && !inputs.bodyTypes.includes(car.bodyType)) return 0;
 
 	let score = 15; // Basis
 
@@ -110,6 +112,12 @@ export function matchScore(car: CarModel, inputs: SearchInputs): number {
 	// 5) Budget-Passgenauigkeit (bis 5 Punkte)
 	const withinMax = inputs.budgetMax >= 100000 || car.priceFrom <= inputs.budgetMax;
 	if (car.priceFrom >= inputs.budgetMin && withinMax) score += 5;
+
+	// 6) Farbe (bis 5 Punkte)
+	if (inputs.colors.length > 0) {
+		const colorMatch = inputs.colors.some((c) => car.colors.includes(c));
+		if (colorMatch) score += 5;
+	}
 
 	return Math.min(100, score);
 }
