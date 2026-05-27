@@ -31,7 +31,7 @@
 
 <div class="flex min-h-screen flex-col bg-gray-50">
 	<!-- Mini-Nav -->
-	<header class="border-b border-gray-200 bg-white">
+	<header class="sticky top-0 z-10 border-b border-gray-200 bg-white">
 		<div class="mx-auto flex h-16 max-w-3xl items-center justify-between px-4">
 			<a href="/" class="text-xl font-bold tracking-tight text-gray-900">
 				Auto<span class="text-primary">Finder</span>
@@ -43,7 +43,7 @@
 	</header>
 
 	<!-- Progress Bar -->
-	<div class="border-b border-gray-100 bg-white">
+	<div class="sticky top-16 z-10 border-b border-gray-100 bg-white">
 		<div class="mx-auto max-w-3xl px-4 py-3">
 			<div class="mb-2 flex items-center justify-between">
 				<span class="text-sm text-gray-700">
