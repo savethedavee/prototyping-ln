@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { getCarBySlug } from '$lib/data/mockCars';
+	import { getMinPrice } from '$lib/utils/matching';
 	import MatchScore from '$lib/components/MatchScore.svelte';
 
 	const car = $derived(getCarBySlug($page.params.slug ?? ''));
@@ -12,6 +13,7 @@
 	};
 
 	const consumptionUnit = $derived(car?.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
+	const priceFrom = $derived(car ? (getMinPrice(car) ?? 0) : 0);
 
 	const PROVIDERS = [
 		{
@@ -76,7 +78,7 @@
 							<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{drivetrainLabel[car.drivetrain]}</span>
 						</div>
 						<p class="mt-2 text-lg font-medium text-gray-900">
-							ab CHF {car.priceFrom.toLocaleString('de-CH')}
+							ab CHF {priceFrom.toLocaleString('de-CH')}
 						</p>
 					</div>
 					<MatchScore score={87} />

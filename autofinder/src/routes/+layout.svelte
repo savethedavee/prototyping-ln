@@ -1,20 +1,18 @@
 <script lang="ts">
 	import '../app.css';
 	import Nav from '$lib/components/Nav.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	let { children } = $props();
 
 	let isWizard = $derived(
-		$page.url.pathname.startsWith('/finder') || $page.url.pathname === '/berechnung'
+		page.url.pathname.startsWith('/finder') || page.url.pathname === '/berechnung'
 	);
 </script>
 
-{#if isWizard}
-	{@render children()}
-{:else}
+{#if !isWizard}
 	<Nav />
-	<main class="flex min-h-[calc(100vh-4rem)] flex-col bg-gray-50">
-		{@render children()}
-	</main>
 {/if}
+<div class={isWizard ? '' : 'flex min-h-[calc(100vh-4rem)] flex-col bg-gray-50'}>
+	{@render children()}
+</div>

@@ -17,6 +17,7 @@
 	};
 
 	const consumptionUnit = $derived(car.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
+	const priceFrom = $derived(Math.min(...car.offers.map((o) => o.price)));
 </script>
 
 <div
@@ -67,7 +68,7 @@
 			<p class="mt-1 text-sm text-gray-500">{car.description}</p>
 		</div>
 		<div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
-			<span>ab CHF {car.priceFrom.toLocaleString('de-CH')}</span>
+			<span>ab CHF {priceFrom.toLocaleString('de-CH')}</span>
 			<span class="text-gray-200">·</span>
 			<span>{car.consumption} {consumptionUnit}</span>
 			<span class="text-gray-200">·</span>

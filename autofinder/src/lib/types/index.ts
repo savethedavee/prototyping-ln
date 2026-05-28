@@ -1,3 +1,9 @@
+export interface CarOffer {
+	condition: 'new' | 'used';
+	price: number;
+	mileage?: number; // km, nur bei used
+}
+
 export interface CarModel {
 	_id?: string;
 	slug: string;
@@ -5,11 +11,10 @@ export interface CarModel {
 	brand: string;
 	type: string;
 	bodyType: 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
-	condition: 'new' | 'used';
+	offers: CarOffer[];
 	colors: string[];
 	drivetrain: 'hybrid' | 'electric' | 'combustion';
 	region: 'europe' | 'asia' | 'america';
-	priceFrom: number;
 	consumption: number; // L/100km or kWh/100km for electric
 	power: number; // PS
 	trunkSize: number; // Liter
