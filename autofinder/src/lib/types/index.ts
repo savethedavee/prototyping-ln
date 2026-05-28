@@ -1,7 +1,26 @@
+export type BodyType = 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
+
 export interface CarOffer {
 	condition: 'new' | 'used';
 	price: number;
-	mileage?: number; // km, nur bei used
+	mileage?: number;       // km, nur bei used
+	color?: string;
+	bodyType?: BodyType;
+	trunkSize?: number;     // Liter
+	drivetrain?: 'hybrid' | 'electric' | 'combustion';
+	transmission?: 'manual' | 'automatic' | 'dct';
+	power?: number;         // PS
+	consumption?: number;   // L/100km or kWh/100km
+	co2?: number;           // g/km
+	seats?: number;
+	features?: string[];
+	year?: number;          // Erstzulassung
+	url?: string;           // Link zum Inserat
+	images?: string[];
+	platform?: string;      // autoscout24 | mobile.de | ...
+	listingId?: string;     // Plattform-ID für Deduplizierung
+	dealer?: string;
+	location?: string;      // Stadt / Kanton
 }
 
 export interface CarModel {
@@ -10,18 +29,9 @@ export interface CarModel {
 	name: string;
 	brand: string;
 	type: string;
-	bodyType: 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
 	offers: CarOffer[];
-	colors: string[];
-	drivetrain: 'hybrid' | 'electric' | 'combustion';
 	region: 'europe' | 'asia' | 'america';
-	consumption: number; // L/100km or kWh/100km for electric
-	power: number; // PS
-	trunkSize: number; // Liter
-	co2: number; // g/km
-	warranty: number; // Jahre
-	seats: number;
-	features: string[];
+	warranty: number;   // Jahre — Herstellergarantie
 	imageUrl?: string;
 	description: string;
 	detailText: string;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { getCarBySlug } from '$lib/data/mockCars';
-	import { getMinPrice } from '$lib/utils/matching';
+	import { getMinPrice, getPrimaryOffer } from '$lib/utils/matching';
 	import MatchScore from '$lib/components/MatchScore.svelte';
 
 	const car = $derived(getCarBySlug($page.params.slug ?? ''));
@@ -12,7 +12,8 @@
 		electric: 'Elektro'
 	};
 
-	const consumptionUnit = $derived(car?.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
+	const primary = $derived(car ? getPrimaryOffer(car) : undefined);
+	const consumptionUnit = $derived(primary?.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
 	const priceFrom = $derived(car ? (getMinPrice(car) ?? 0) : 0);
 
 	const PROVIDERS = [
@@ -75,7 +76,7 @@
 						<h1 class="text-2xl font-medium text-gray-900">{car.name}</h1>
 						<div class="mt-2 flex items-center gap-2">
 							<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{car.type}</span>
-							<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{drivetrainLabel[car.drivetrain]}</span>
+							<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{drivetrainLabel[primary?.drivetrain ?? 'combustion']}</span>
 						</div>
 						<p class="mt-2 text-lg font-medium text-gray-900">
 							ab CHF {priceFrom.toLocaleString('de-CH')}
@@ -115,16 +116,16 @@
 			<div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
 				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
 					<p class="text-xs text-gray-400">Leistung</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{car.power} PS</p>
+					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.power} PS</p>
 				</div>
 				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
 					<p class="text-xs text-gray-400">Verbrauch</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{car.consumption}</p>
+					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.consumption}</p>
 					<p class="text-xs text-gray-400">{consumptionUnit}</p>
 				</div>
 				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
 					<p class="text-xs text-gray-400">Kofferraum</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{car.trunkSize} L</p>
+					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.trunkSize} L</p>
 				</div>
 				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
 					<p class="text-xs text-gray-400">Garantie</p>
@@ -165,11 +166,11 @@
 			<div class="grid grid-cols-3 gap-4 text-sm">
 				<div>
 					<p class="text-gray-400">CO₂</p>
-					<p class="font-medium text-gray-900">{car.co2 === 0 ? '0 (elektrisch)' : `${car.co2} g/km`}</p>
+					<p class="font-medium text-gray-900">{primary?.co2 === 0 ? '0 (elektrisch)' : `${primary?.co2} g/km`}</p>
 				</div>
 				<div>
 					<p class="text-gray-400">Sitze</p>
-					<p class="font-medium text-gray-900">{car.seats}</p>
+					<p class="font-medium text-gray-900">{primary?.seats}</p>
 				</div>
 				<div>
 					<p class="text-gray-400">Herkunft</p>

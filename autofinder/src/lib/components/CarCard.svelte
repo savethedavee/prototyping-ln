@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CarModelWithScore } from '$lib/types';
+	import { getMinPrice, getPrimaryOffer } from '$lib/utils/matching';
 	import MatchScore from './MatchScore.svelte';
 
 	interface Props {
@@ -16,8 +17,10 @@
 		electric: 'Elektro'
 	};
 
-	const consumptionUnit = $derived(car.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
-	const priceFrom = $derived(Math.min(...car.offers.map((o) => o.price)));
+	const primary = $derived(getPrimaryOffer(car));
+	const drivetrain = $derived(primary?.drivetrain ?? 'combustion');
+	const consumptionUnit = $derived(drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
+	const priceFrom = $derived(getMinPrice(car) ?? 0);
 </script>
 
 <div
@@ -55,14 +58,14 @@
 				</span>
 				<span
 					class="rounded-full px-2 py-0.5 text-[11px] font-medium"
-					class:bg-green-50={car.drivetrain === 'electric'}
-					class:text-green-700={car.drivetrain === 'electric'}
-					class:bg-blue-50={car.drivetrain === 'hybrid'}
-					class:text-blue-700={car.drivetrain === 'hybrid'}
-					class:bg-gray-100={car.drivetrain === 'combustion'}
-					class:text-gray-500={car.drivetrain === 'combustion'}
+					class:bg-green-50={drivetrain === 'electric'}
+					class:text-green-700={drivetrain === 'electric'}
+					class:bg-blue-50={drivetrain === 'hybrid'}
+					class:text-blue-700={drivetrain === 'hybrid'}
+					class:bg-gray-100={drivetrain === 'combustion'}
+					class:text-gray-500={drivetrain === 'combustion'}
 				>
-					{drivetrainLabel[car.drivetrain]}
+					{drivetrainLabel[drivetrain]}
 				</span>
 			</div>
 			<p class="mt-1 text-sm text-gray-500">{car.description}</p>
@@ -70,9 +73,9 @@
 		<div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
 			<span>ab CHF {priceFrom.toLocaleString('de-CH')}</span>
 			<span class="text-gray-200">·</span>
-			<span>{car.consumption} {consumptionUnit}</span>
+			<span>{primary?.consumption} {consumptionUnit}</span>
 			<span class="text-gray-200">·</span>
-			<span>{car.power} PS</span>
+			<span>{primary?.power} PS</span>
 		</div>
 	</div>
 
