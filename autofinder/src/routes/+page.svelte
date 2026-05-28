@@ -1,3 +1,13 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { clearSearchInputs } from '$lib/stores/questionnaire';
+
+	function startNewSearch() {
+		clearSearchInputs();
+		goto('/finder/budget');
+	}
+</script>
+
 <svelte:head>
 	<title>AutoFinder – Das passende Auto finden</title>
 	<meta name="description" content="Finde dein passendes Auto in wenigen Minuten." />
@@ -17,12 +27,13 @@
 				Beantworte 6 kurze Fragen zu Budget, Nutzung und Prioritäten — wir zeigen dir die Modelle,
 				die am besten zu dir passen.
 			</p>
-			<a
-				href="/finder/budget"
+			<button
+				type="button"
+				onclick={startNewSearch}
 				class="mt-6 inline-block rounded-card bg-gray-900 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-gray-700"
 			>
 				Auto finden →
-			</a>
+			</button>
 			<p class="mt-3 text-xs text-gray-400">ca. 3 Minuten · Kostenlos · Keine Anmeldung nötig</p>
 		</div>
 	</section>

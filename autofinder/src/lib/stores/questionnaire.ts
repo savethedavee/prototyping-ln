@@ -1,4 +1,5 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
+import { browser } from '$app/environment';
 import type { SearchInputs } from '$lib/types';
 
 export const TOTAL_STEPS = 6;
@@ -23,10 +24,33 @@ export const defaultInputs: SearchInputs = {
 	}
 };
 
-export const currentStep = writable(1);
-export const searchInputs = writable<SearchInputs>(structuredClone(defaultInputs));
+const SESSION_KEY = 'autofinder:searchInputs';
 
-export function resetQuestionnaire() {
+function loadFromSession(): SearchInputs {
+	if (!browser) return structuredClone(defaultInputs);
+	try {
+		const raw = sessionStorage.getItem(SESSION_KEY);
+		if (!raw) return structuredClone(defaultInputs);
+		return { ...structuredClone(defaultInputs), ...JSON.parse(raw) };
+	} catch {
+		return structuredClone(defaultInputs);
+	}
+}
+
+export const currentStep = writable(1);
+export const searchInputs = writable<SearchInputs>(loadFromSession());
+
+export function persistSearchInputs() {
+	if (!browser) return;
+	sessionStorage.setItem(SESSION_KEY, JSON.stringify(get(searchInputs)));
+}
+
+export function clearSearchInputs() {
+	if (browser) sessionStorage.removeItem(SESSION_KEY);
 	currentStep.set(1);
 	searchInputs.set(structuredClone(defaultInputs));
+}
+
+export function resetQuestionnaire() {
+	clearSearchInputs();
 }

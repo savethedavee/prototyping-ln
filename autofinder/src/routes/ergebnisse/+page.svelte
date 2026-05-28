@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import { searchInputs } from '$lib/stores/questionnaire';
-	import { mockCars } from '$lib/data/mockCars';
+	import { searchInputs, persistSearchInputs } from '$lib/stores/questionnaire';
 	import { matchScore } from '$lib/utils/matching';
 	import CarCard from '$lib/components/CarCard.svelte';
 	import type { CarModelWithScore } from '$lib/types';
 	import type { PageData } from './$types';
 	let { data }: { data: PageData } = $props();
 
+
+	persistSearchInputs();
 	const inputs = get(searchInputs);
 
 	const results: CarModelWithScore[] = data.cars

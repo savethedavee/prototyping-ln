@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { clearSearchInputs } from '$lib/stores/questionnaire';
+
+	function startNewSearch() {
+		clearSearchInputs();
+		goto('/finder/budget');
+	}
 </script>
 
 <nav class="border-b border-gray-200 bg-white">
@@ -41,12 +48,13 @@
 					</a>
 				</li>
 				<li>
-					<a
-						href="/finder/budget"
+					<button
+						type="button"
+						onclick={startNewSearch}
 						class="rounded-card bg-gray-900 px-4 py-2 text-white transition-colors hover:bg-gray-700"
 					>
 						Auto finden
-					</a>
+					</button>
 				</li>
 			</ul>
 		</div>
