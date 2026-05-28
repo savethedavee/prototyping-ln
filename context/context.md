@@ -61,13 +61,22 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 - [x] **Karosserieform** — In Step 3 integriert (unterer Abschnitt "Welche Karosserieform passt zu dir?").
 - [x] **Farbe** — In Step 5 integriert (Abschnitt "Farbe" mit Egal-Option, die per default aktiv ist).
 
-### Schritt 3 — MongoDB anbinden
-- [ ] MongoDB-Atlas-Cluster aufsetzen, `MONGODB_URI` als env var
-- [ ] Seed-Script `scripts/seed.ts` für 15–20 Auto-Modelle
-- [ ] Ergebnisliste & Detail aus DB laden (`+page.server.ts` mit `load`)
-- [ ] Match-Score-Berechnung serverseitig (gewichtete Summe)
+### Schritt 3 — MongoDB anbinden ✅ ERLEDIGT
+- [x] MongoDB-Atlas-Cluster aufsetzen, `MONGODB_URI` als env var
+- [x] Seed-Script `scripts/seed.ts` für alle Modelle (upsert per `slug`, idempotent)
+- [x] Ergebnisliste & Detail aus DB laden (`+page.server.ts` mit `load`)
+- [x] DB-Layer in `src/lib/server/` (`db.ts` Singleton, `cars.ts` mit `getAllCars`/`getCarBySlug`)
+- [x] `sessionStorage`-Persistenz für `searchInputs` (Reload-fest auf Ergebnisseite)
+- [ ] Match-Score-Berechnung serverseitig (gewichtete Summe) — *bleibt clientseitig für Live-Reaktivität*
 
-### Schritt 4 — Suchen speichern
+### Schritt 3.5 — Scraper-Package (neu, in Planung)
+- [ ] `scraper/`-Package neben `autofinder/` (eigenständig, kein Workspace)
+- [ ] AutoScout24.ch via Playwright
+- [ ] Output mappt direkt auf `CarOffer`
+- [ ] Scraper-Daten erzeugen neue `CarModel`-Einträge (keine kuratierten Modelle)
+- [ ] Direktes Upsert in MongoDB (gleiches `MONGODB_URI`)
+
+### Schritt 4 — Suchen speichern (in DB, nicht nur Session)
 - [ ] Form Action „Suche speichern" auf der Ergebnisliste
 - [ ] „Meine Suchen"-Seite mit Liste aus DB
 - [ ] Bearbeiten- und Löschen-Aktionen
@@ -102,7 +111,8 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 - **Versionierung:** Git/GitHub
 - **Datenfetching:** `+page.server.ts` mit `load`-Funktion (kein eigenes API-Layer)
 - **Mutationen:** SvelteKit Form Actions (keine REST-API)
-- **State während Fragebogen:** Svelte-Stores (vor dem Speichern in DB)
+- **State während Fragebogen:** Svelte-Stores + `sessionStorage` (Persistierung via `persistSearchInputs()` auf Ergebnisseite, Clear via `clearSearchInputs()` beim Start einer neuen Suche)
+- **MongoDB-Connection:** Singleton in `src/lib/server/db.ts` via `$env/dynamic/private`. Seed/CLI-Scripts in `scripts/` nutzen `dotenv` direkt.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `refactor:`)
 - **Komponenten:** klein und wiederverwendbar — z. B. eine `<QuestionnaireFrame>`-Wrapper-Component für alle 6 Schritte
 
