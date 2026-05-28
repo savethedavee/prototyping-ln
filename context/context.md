@@ -110,23 +110,45 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 
 ## Daten-Modell
 
-### CarModel (Modelle in DB, geseedet)
+> **Architektur-Entscheid:** `CarModel` ist scraper-ready. Jedes `CarOffer` repräsentiert ein einzelnes Inserat (z.B. von AutoScout24) mit allen variantenspezifischen Feldern. `CarModel` gruppiert Inserate nach Modell-Familie.
+
+### CarOffer (ein konkretes Inserat)
 ```ts
 {
-  _id: ObjectId,
+  condition: "new" | "used",
+  price: number,
+  mileage?: number,           // km, nur bei used
+  color?: string,             // Farbe dieses Inserats
+  bodyType?: "suv" | "kombi" | "limousine" | "kompakt" | "kleinwagen" | "van",
+  trunkSize?: number,         // Liter
+  drivetrain?: "combustion" | "hybrid" | "electric",
+  transmission?: "manual" | "automatic" | "dct",
+  power?: number,             // PS
+  consumption?: number,       // L/100km oder kWh/100km
+  co2?: number,               // g/km
+  seats?: number,
+  features?: string[],
+  year?: number,              // Erstzulassung
+  url?: string,               // Link zum Inserat
+  images?: string[],
+  platform?: string,          // "autoscout24" | "mobile.de" | ...
+  listingId?: string,         // Plattform-ID für Deduplizierung
+  dealer?: string,
+  location?: string,          // Stadt / Kanton
+}
+```
+
+### CarModel (Modell-Familie, geseedet)
+```ts
+{
+  _id?: ObjectId,
+  slug: string,           // "toyota-rav4-hybrid"
   name: string,           // "Toyota RAV4 Hybrid"
   brand: string,          // "Toyota"
   type: string,           // "Kompakt-SUV"
-  drivetrain: "combustion" | "hybrid" | "electric",
   region: "europe" | "asia" | "america",
-  priceFrom: number,      // 38900 (CHF)
-  consumption: number,    // 5.4 (L/100km, oder kWh/100km bei E)
-  power: number,          // 218 (PS)
-  trunkSize: number,      // 580 (L)
-  co2: number,            // 123 (g/km)
-  warranty: number,       // 3 (Jahre)
-  seats: number,          // 5
-  features: string[],     // ["climate", "carplay", "awd", "rearcam", ...]
+  warranty: number,       // 3 (Jahre — Herstellergarantie)
+  offers: CarOffer[],
   imageUrl?: string,
   description: string,    // 1–2 Sätze für Listenansicht
   detailText: string      // Längerer „Was das für dich bedeutet"-Text
@@ -145,11 +167,14 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
   inputs: {
     budgetMin: number,
     budgetMax: number,
+    condition: "new" | "used" | "any",
     usage: string[],              // ["commute", "family"]
     drivetrain: string[],         // ["hybrid"]
+    bodyTypes: string[],
+    colors: string[],
     brandRegion?: string,         // "europe" | "asia" | "america" | "any"
     brands?: string[],
-    features: string[],           // ["climate", "rearcam", "awd"]
+    features: string[],
     priorities: {
       consumption: number,        // 1–5
       power: number,
@@ -161,28 +186,27 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 }
 ```
 
-### Match-Score-Berechnung (Pseudocode)
-```ts
-function matchScore(model: CarModel, inputs: SearchInputs): number {
-  // Harte Filter
-  if (model.priceFrom > inputs.budgetMax) return 0;
-  if (inputs.drivetrain.length > 0 && !inputs.drivetrain.includes(model.drivetrain)) return 0;
+### Match-Score-Berechnung
 
-  let score = 0;
-  const featureMatches = inputs.features.filter(f => model.features.includes(f)).length;
-  score += (featureMatches / inputs.features.length) * 30;
+Implementiert in `autofinder/src/lib/utils/matching.ts`.
 
-  if (inputs.brands && inputs.brands.includes(model.brand)) score += 10;
+**Harte Filter** (→ Score 0 wenn nicht erfüllt):
+- Kein Angebot im Budget / mit passender Condition / Antrieb / Karosserieform
+- Falsche Brand-Region
 
-  const consumptionScore = (1 - model.consumption / 10) * inputs.priorities.consumption;
-  const powerScore = (model.power / 300) * inputs.priorities.power;
-  // ... etc.
+**Soft Scoring** (max 100 Punkte):
 
-  return Math.min(100, score);
-}
-```
+| Kriterium | Max |
+|---|---|
+| Basis | 15 |
+| Nutzung (`scoreForUsage`) | 40 |
+| Ausstattung (`scoreForFeatures`) | 15 |
+| Marke (`scoreForBrand`) | 10 |
+| Prioritäten (`scoreForPriorities`) | 10 |
+| Budget-Passgenauigkeit (`scoreForBudget`) | 5 |
+| Farbe (`scoreForColor`) | 5 |
 
-> Formel muss nicht „echt" sein — nur differenziert genug, dass Modelle unterschiedliche Scores bekommen.
+Nutzungs-Scoring basiert auf `USAGE_CRITERIA` — einer deklarativen Config-Tabelle pro Usage-Typ (`commute`, `family`, `leisure`, `city`, `commercial`, `sport`).
 
 ---
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { getCarBySlug } from '$lib/data/mockCars';
 	import { getMinPrice, getPrimaryOffer } from '$lib/utils/matching';
 	import MatchScore from '$lib/components/MatchScore.svelte';
+	import type { PageData } from './$types';
 
-	const car = $derived(getCarBySlug($page.params.slug ?? ''));
+	let { data }: { data: PageData } = $props();
+	const car = $derived(data.car);
 
 	const drivetrainLabel: Record<string, string> = {
 		combustion: 'Verbrenner',

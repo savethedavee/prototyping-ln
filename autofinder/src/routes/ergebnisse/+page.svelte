@@ -5,10 +5,12 @@
 	import { matchScore } from '$lib/utils/matching';
 	import CarCard from '$lib/components/CarCard.svelte';
 	import type { CarModelWithScore } from '$lib/types';
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 
 	const inputs = get(searchInputs);
 
-	const results: CarModelWithScore[] = mockCars
+	const results: CarModelWithScore[] = data.cars
 		.map((car) => ({ ...car, matchScore: matchScore(car, inputs) }))
 		.filter((car) => car.matchScore >= 60)
 		.sort((a, b) => b.matchScore - a.matchScore);

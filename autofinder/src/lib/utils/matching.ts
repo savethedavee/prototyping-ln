@@ -112,8 +112,8 @@ export function getRelevantOffers(car: CarModel, inputs: SearchInputs): CarOffer
 
 function buildOfferProfile(offers: CarOffer[]): OfferProfile {
     return {
-        drivetrains: [...new Set(offers.map((o) => o.drivetrain).filter((d): d is string => !!d))],
-        bodyTypes: [...new Set(offers.map((o) => o.bodyType).filter((b): b is string => !!b))],
+        drivetrains: [...new Set(offers.map((o) => o.drivetrain).filter((d): d is NonNullable<typeof d> => !!d))],
+        bodyTypes: [...new Set(offers.map((o) => o.bodyType).filter((b): b is NonNullable<typeof b> => !!b))],
         features: [...new Set(offers.flatMap((o) => o.features ?? []))],
         maxPower: Math.max(0, ...offers.map((o) => o.power ?? 0)),
         minConsumption: Math.min(Infinity, ...offers.map((o) => o.consumption ?? Infinity)),
