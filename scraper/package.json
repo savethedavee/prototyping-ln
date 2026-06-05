@@ -1,0 +1,26 @@
+{
+  "name": "autofinder-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone AutoScout24.ch scraper that upserts CarModel/CarOffer data into the AutoFinder MongoDB.",
+  "scripts": {
+    "scrape": "tsx src/index.ts",
+    "postscrape": "tsx src/coverage.ts",
+    "verify": "tsx src/verify-template.ts",
+    "coverage": "tsx src/coverage.ts",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.8.0",
+    "playwright": "^1.45.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
+}
