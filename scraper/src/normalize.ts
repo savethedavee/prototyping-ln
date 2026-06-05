@@ -47,6 +47,39 @@ const BODY_MAP: { match: RegExp; value: BodyType }[] = [
 	{ match: /kompakt|compact|sport/i, value: 'kompakt' }
 ];
 
+// Maps AS24 equipment labels (German, free text) to the app's feature keys.
+// An equipment item can match several keys; all matches are collected.
+const FEATURE_MAP: { match: RegExp; key: string }[] = [
+	{ match: /klimaanlage|klimaautomatik|klimatis|klima\b/i, key: 'climate' },
+	{ match: /carplay|android auto|apple car/i, key: 'carplay' },
+	{ match: /navigation|navi\b|navigationssystem/i, key: 'navigation' },
+	{ match: /360|surround|rundumsicht|umgebungskamera|bird.?view/i, key: 'surroundCam' },
+	{ match: /rückfahrkamera|rueckfahrkamera|rückfahr|reversing camera|backup camera/i, key: 'rearCam' },
+	{ match: /adaptiv.*tempomat|abstandstempomat|abstandsregel|abstandswarn|acc\b|adaptive cruise/i, key: 'adaptiveCruise' },
+	{ match: /spurhalte|spurassistent|spurwechsel|lane (keep|assist|departure)/i, key: 'laneAssist' },
+	{ match: /sitzheizung|seat heating/i, key: 'seatHeating' },
+	{ match: /leder|alcantara|leather/i, key: 'leather' },
+	{ match: /sportsitz|sport seat|schalensitz/i, key: 'sportSeats' },
+	{ match: /induktiv|wireless charg|kabellos.*lad|qi.?lad/i, key: 'wirelessCharging' },
+	{ match: /einparkhilfe|einpark|parksensor|parkpilot|park distance|parkassist|pdc\b|parktronic/i, key: 'parkAssist' },
+	{ match: /anhängerkupplung|anhaengerkupplung|anhänger|ahk\b|tow.?(bar|hitch)/i, key: 'towHitch' },
+	{ match: /dachreling|dachträger|dachtraeger|roof rail/i, key: 'roofRails' },
+	{ match: /allrad|4x4|4motion|quattro|xdrive|4matic|all.?wheel|awd\b/i, key: 'awd' },
+	{ match: /head.?up/i, key: 'hud' }
+];
+
+/** Map raw equipment labels to the app's feature keys (deduplicated). */
+function mapFeatures(equipment: string[] | undefined): string[] | undefined {
+	if (!equipment?.length) return undefined;
+	const keys = new Set<string>();
+	for (const item of equipment) {
+		for (const { match, key } of FEATURE_MAP) {
+			if (match.test(item)) keys.add(key);
+		}
+	}
+	return keys.size ? [...keys] : undefined;
+}
+
 /** Coerce a JSON-LD value (string or number) into a number. */
 function num(s: string | number | undefined | null): number | undefined {
 	if (s == null) return undefined;
@@ -231,7 +264,7 @@ export function normalize(raw: RawScrape): Normalized | undefined {
 				node?.productionDate ??
 				spec(raw.specs, 'inverkehr', 'erstzulassung', 'jahrgang', 'jahr')
 		),
-		features: undefined, // AS24 equipment lists vary too much to map reliably yet
+		features: mapFeatures(raw.equipment),
 		url: ldStr(node?.url) ?? raw.url,
 		images: undefined,
 		platform: 'autoscout24',

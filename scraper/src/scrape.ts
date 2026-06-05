@@ -12,6 +12,8 @@ export interface RawScrape {
 	location?: string;
 	breadcrumbs: string[];
 	jsonLd: unknown[];
+	/** Raw equipment/option labels from the listing ("Klimaanlage", "Sitzheizung", …). */
+	equipment: string[];
 }
 
 const UA =
@@ -160,11 +162,27 @@ function withPageParam(searchUrl: string, pageNum: number): string {
 	return u.toString();
 }
 
+/** Expand any collapsed "Mehr anzeigen" sections (esp. the equipment list). */
+async function expandSections(page: Page): Promise<void> {
+	for (let i = 0; i < 4; i++) {
+		const btn = page.getByRole('button', { name: /mehr anzeigen|alle anzeigen|show more/i }).first();
+		try {
+			if (!(await btn.isVisible({ timeout: 1000 }))) return;
+			await btn.click({ timeout: 1500 });
+			await page.waitForTimeout(300);
+		} catch {
+			return; // none left / not clickable
+		}
+	}
+}
+
 /** Loads a listing detail page and pulls out raw, unparsed data. */
 export async function scrapeListing(page: Page, url: string): Promise<RawScrape> {
 	await gotoAndSettle(page, url);
 	// Glance over the page like a human before reading the data off it.
 	await humanScroll(page);
+	// Reveal the full equipment list before reading it.
+	await expandSections(page);
 
 	return page.evaluate(() => {
 		// tsx/esbuild wraps named functions with a __name() helper that isn't
@@ -213,6 +231,16 @@ export async function scrapeListing(page: Page, url: string): Promise<RawScrape>
 			.map((a) => a.textContent?.trim() || '')
 			.filter(Boolean);
 
+		// Equipment list lives in #expandable-equipment as line-separated labels.
+		const HEADINGS = /^(mehr anzeigen|weniger anzeigen|alle anzeigen|(zusätzliche|serienmässige|serienmaessige|optionale) ausstattung|ausstattungen)$/i;
+		const eqEl = document.querySelector('#expandable-equipment') as HTMLElement | null;
+		const equipment = eqEl
+			? eqEl.innerText
+					.split('\n')
+					.map((s) => s.trim())
+					.filter((s) => s.length > 1 && s.length < 60 && !HEADINGS.test(s))
+			: [];
+
 		return {
 			url: location.href.split('?')[0],
 			title: text(document.querySelector('h1')),
@@ -222,7 +250,8 @@ export async function scrapeListing(page: Page, url: string): Promise<RawScrape>
 			dealer: text(document.querySelector('[class*="ealer"] [class*="ame"], [data-testid*="ealer"]')),
 			location: text(document.querySelector('[class*="ocation"], [data-testid*="ocation"]')),
 			breadcrumbs,
-			jsonLd
+			jsonLd,
+			equipment: Array.from(new Set(equipment))
 		} satisfies RawScrape;
 	});
 }

@@ -14,4 +14,5 @@ console.log('jsonLd:', JSON.stringify(raw.jsonLd, null, 2).slice(0, 2000));
 console.log('spec keys:', Object.keys(raw.specs));
 console.log('specs:', JSON.stringify(raw.specs, null, 2).slice(0, 1500));
 console.log('images:', raw.images.slice(0, 3));
+console.log('equipment (' + raw.equipment.length + '):', raw.equipment.slice(0, 30));
 await context.close();

@@ -38,8 +38,32 @@ function loadTemplate(file: string): RawScrape {
 		dealer: undefined,
 		location: undefined,
 		breadcrumbs: [],
-		jsonLd
+		jsonLd,
+		equipment: extractEquipment(html)
 	};
+}
+
+/** Pull equipment labels out of the saved #expandable-equipment section. */
+function extractEquipment(html: string): string[] {
+	const i = html.indexOf('id="expandable-equipment"');
+	if (i < 0) return [];
+	const enders = ['Motorfahrzeugkontrolle', 'Fahrzeugbeschreibung', 'Versicherung', 'Garantie'];
+	const end = Math.min(...enders.map((t) => {
+		const x = html.indexOf(t, i);
+		return x < 0 ? html.length : x;
+	}));
+	const skip = /css-|^id=|^@media|mehr anzeigen|arrow down|^(zusätzliche|serienmässige|optionale) ausstattung$/i;
+	return [
+		...new Set(
+			html
+				.slice(i, end)
+				.replace(/<style[\s\S]*?<\/style>/g, ' ')
+				.replace(/<[^>]+>/g, '\n')
+				.split('\n')
+				.map((s) => s.trim())
+				.filter((s) => s.length > 1 && s.length < 60 && !skip.test(s))
+		)
+	];
 }
 
 let failed = 0;
@@ -93,7 +117,15 @@ console.log('\n=== template_coupe.html (Mercedes-AMG GT) ===');
 {
 	const { offer: o } = parse('template_coupe.html');
 	check('bodyType coupe', o.bodyType === 'coupe');
+	// Equipment mapping: the saved page lists Klimaanlage, Teil-Ledersitze,
+	// Spurhalteassistent → climate / leather / laneAssist.
+	const f = o.features ?? [];
+	check('features erkannt', f.length > 0);
+	check('feature climate', f.includes('climate'));
+	check('feature leather', f.includes('leather'));
+	check('feature laneAssist', f.includes('laneAssist'));
 	console.log('  bodyType =', o.bodyType ?? 'undefined');
+	console.log('  features =', f.join(', ') || '—');
 }
 
 // --- template_cabrio.html : Mercedes-AMG GT Roadster (AS24 "cabriolet") -------
