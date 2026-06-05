@@ -144,6 +144,15 @@ function offerOf(node: Record<string, any> | undefined): Record<string, any> | u
 	return Array.isArray(o) ? o[0] : o;
 }
 
+/** Combined fuel/energy consumption from JSON-LD (L/100km or kWh/100km). */
+function consumptionFromNode(node: Record<string, any> | undefined): number | undefined {
+	const fc = node?.fuelConsumption;
+	if (!fc) return undefined;
+	const arr = Array.isArray(fc) ? fc : [fc];
+	const combined = arr.find((x) => /combined|kombiniert|total/i.test(x?.name ?? '')) ?? arr[0];
+	return num(combined?.value);
+}
+
 /** Read a string from a JSON-LD value: plain string, number, or `{ name }` object. */
 function ldStr(v: unknown): string | undefined {
 	if (typeof v === 'string') return v.trim() || undefined;
@@ -255,8 +264,8 @@ export function normalize(raw: RawScrape): Normalized | undefined {
 		drivetrain: mapBy(FUEL_MAP, fuelText),
 		transmission: mapBy(TRANSMISSION_MAP, transText),
 		power: powerPs(node) ?? num(spec(raw.specs, 'leistung', ' ps', 'kw')),
-		consumption: num(spec(raw.specs, 'verbrauch')),
-		co2: num(spec(raw.specs, 'co2', 'co₂')),
+		consumption: consumptionFromNode(node) ?? num(spec(raw.specs, 'verbrauch')),
+		co2: num(node?.emissionsCO2) ?? num(spec(raw.specs, 'co2', 'co₂')),
 		seats: num(node?.vehicleSeatingCapacity ?? spec(raw.specs, 'sitzplätze', 'plätze', 'sitze')),
 		trunkSize: num(spec(raw.specs, 'kofferraum')),
 		year: num(

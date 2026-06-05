@@ -117,6 +117,8 @@ console.log('\n=== template_coupe.html (Mercedes-AMG GT) ===');
 {
 	const { offer: o } = parse('template_coupe.html');
 	check('bodyType coupe', o.bodyType === 'coupe');
+	check('consumption 9.6', o.consumption === 9.6);
+	check('co2 224', o.co2 === 224);
 	// Equipment mapping: the saved page lists Klimaanlage, Teil-Ledersitze,
 	// Spurhalteassistent → climate / leather / laneAssist.
 	const f = o.features ?? [];
@@ -125,6 +127,7 @@ console.log('\n=== template_coupe.html (Mercedes-AMG GT) ===');
 	check('feature leather', f.includes('leather'));
 	check('feature laneAssist', f.includes('laneAssist'));
 	console.log('  bodyType =', o.bodyType ?? 'undefined');
+	console.log('  consumption/co2 =', o.consumption, '/', o.co2);
 	console.log('  features =', f.join(', ') || '—');
 }
 
@@ -133,7 +136,10 @@ console.log('\n=== template_cabrio.html (Mercedes-AMG GT Roadster) ===');
 {
 	const { offer: o } = parse('template_cabrio.html');
 	check('bodyType cabrio', o.bodyType === 'cabrio');
+	check('consumption 12.6', o.consumption === 12.6);
+	check('co2 287', o.co2 === 287);
 	console.log('  bodyType =', o.bodyType ?? 'undefined');
+	console.log('  consumption/co2 =', o.consumption, '/', o.co2);
 }
 
 console.log(`\n${failed === 0 ? '✔ all passed' : `✖ ${failed} failed`}`);

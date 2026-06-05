@@ -9,6 +9,7 @@
     "postscrape": "tsx src/coverage.ts",
     "verify": "tsx src/verify-template.ts",
     "coverage": "tsx src/coverage.ts",
+    "check-fields": "tsx src/check-fields.ts",
     "postinstall": "playwright install chromium"
   },
   "dependencies": {
