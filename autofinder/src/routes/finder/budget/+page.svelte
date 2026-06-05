@@ -50,7 +50,7 @@
 	<title>Budget – AutoFinder</title>
 </svelte:head>
 
-<QuestionnaireFrame currentStep={1} nextHref="/finder/nutzung" onReset={reset}>
+<QuestionnaireFrame currentStep={1} backHref="/" nextHref="/finder/nutzung" onReset={reset}>
 	<h1 class="text-2xl font-medium text-gray-900">Was ist dein Budget?</h1>
 	<p class="mt-2 text-sm text-gray-500">Wir zeigen dir nur Modelle, die in deinem Preisrahmen liegen.</p>
 

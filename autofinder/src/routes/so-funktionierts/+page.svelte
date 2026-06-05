@@ -1,3 +1,7 @@
+<script lang="ts">
+	import Footer from '$lib/components/Footer.svelte';
+</script>
+
 <svelte:head>
 	<title>So funktioniert's – AutoFinder</title>
 </svelte:head>
@@ -44,9 +48,4 @@
 	</a>
 </div>
 
-<footer class="border-t border-gray-200 bg-white px-4 py-6">
-	<div class="mx-auto flex max-w-6xl items-center justify-between text-xs text-gray-400">
-		<span>© 2026 AutoFinder</span>
-		<span>Datenschutz · Impressum</span>
-	</div>
-</footer>
+<Footer />
