@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { CarModelWithScore } from '$lib/types';
-	import { getMinPrice, getPrimaryOffer } from '$lib/utils/matching';
-	import MatchScore from './MatchScore.svelte';
+	import { getImageUrl, getMinPrice, getPrimaryOffer } from '$lib/utils/matching';
 
 	interface Props {
 		car: CarModelWithScore;
@@ -21,29 +20,46 @@
 	const drivetrain = $derived(primary?.drivetrain ?? 'combustion');
 	const consumptionUnit = $derived(drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
 	const priceFrom = $derived(getMinPrice(car) ?? 0);
+	const image = $derived(getImageUrl(car));
+	let imgFailed = $state(false);
 </script>
 
 <div
-	class="flex items-stretch gap-4 rounded-card border border-gray-200 bg-white p-4 shadow-card transition-shadow hover:shadow-md"
+	class="relative flex items-stretch gap-4 rounded-card border border-gray-200 bg-white p-4 shadow-card transition-shadow hover:shadow-md"
 >
-	<!-- Image placeholder -->
+	<!-- Stretched link: makes the whole card open the detail page -->
+	<a href="/modell/{car.slug}" class="absolute inset-0 rounded-card" aria-label="Details zu {car.name} ansehen">
+		<span class="sr-only">Details ansehen</span>
+	</a>
+
+	<!-- Image -->
 	<div
-		class="flex h-[70px] w-[110px] flex-shrink-0 items-center justify-center rounded bg-gray-100 text-gray-300"
+		class="flex h-[70px] w-[110px] flex-shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 text-gray-300"
 	>
-		<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="1.5"
-				d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
+		{#if image && !imgFailed}
+			<img
+				src={image}
+				alt={car.name}
+				loading="lazy"
+				class="h-full w-full object-cover"
+				onerror={() => (imgFailed = true)}
 			/>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="1.5"
-				d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h8l2-2zM13 6h2l3 5v5h-5V6z"
-			/>
-		</svg>
+		{:else}
+			<svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="1.5"
+					d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
+				/>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="1.5"
+					d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h8l2-2zM13 6h2l3 5v5h-5V6z"
+				/>
+			</svg>
+		{/if}
 	</div>
 
 	<!-- Middle: info -->
@@ -79,17 +95,21 @@
 		</div>
 	</div>
 
-	<!-- Match score -->
-	<div class="flex-shrink-0 px-3">
-		<MatchScore score={car.matchScore} />
-	</div>
-
-	<!-- Actions -->
-	<div class="flex flex-shrink-0 flex-col justify-center gap-2">
+	<!-- Match score + actions -->
+	<div class="flex flex-shrink-0 flex-col items-center justify-center gap-2 px-3">
+		<span
+			class="whitespace-nowrap rounded-full px-4 py-1.5 text-xl font-semibold tabular-nums"
+			class:bg-green-100={car.matchScore >= 85}
+			class:text-green-700={car.matchScore >= 85}
+			class:bg-primary-light={car.matchScore < 85}
+			class:text-primary={car.matchScore < 85}
+		>
+			{car.matchScore}&nbsp;% Match
+		</span>
 		{#if onToggleCompare}
 			<button
 				onclick={() => onToggleCompare(car.slug)}
-				class="rounded-card border px-3 py-1.5 text-xs font-medium transition-colors"
+				class="relative z-10 rounded-card border px-3 py-1.5 text-xs font-medium transition-colors"
 				class:border-primary={isComparing}
 				class:text-primary={isComparing}
 				class:bg-primary-light={isComparing}
@@ -100,11 +120,5 @@
 				{isComparing ? '✓ Verglichen' : '+ Vergleich'}
 			</button>
 		{/if}
-		<a
-			href="/modell/{car.slug}"
-			class="rounded-card bg-gray-900 px-3 py-1.5 text-center text-xs font-medium text-white transition-colors hover:bg-gray-700"
-		>
-			Details →
-		</a>
 	</div>
 </div>

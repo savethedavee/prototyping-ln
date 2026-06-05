@@ -69,12 +69,19 @@ Nebenworkflows: Vergleichen (2–3 Modelle) · Suche speichern & wiederaufnehmen
 - [x] `sessionStorage`-Persistenz für `searchInputs` (Reload-fest auf Ergebnisseite)
 - [ ] Match-Score-Berechnung serverseitig (gewichtete Summe) — *bleibt clientseitig für Live-Reaktivität*
 
-### Schritt 3.5 — Scraper-Package (neu, in Planung)
-- [ ] `scraper/`-Package neben `autofinder/` (eigenständig, kein Workspace)
-- [ ] AutoScout24.ch via Playwright
-- [ ] Output mappt direkt auf `CarOffer`
-- [ ] Scraper-Daten erzeugen neue `CarModel`-Einträge (keine kuratierten Modelle)
-- [ ] Direktes Upsert in MongoDB (gleiches `MONGODB_URI`)
+### Schritt 3.5 — Scraper-Package (gebaut, Live-Verifikation offen)
+- [x] `scraper/`-Package neben `autofinder/` (eigenständig, kein Workspace; Playwright + tsx + mongodb)
+- [x] CLI: `npm run scrape -- "<autoscout24-such-url>" [--max N] [--dry]`; Eingabe = kopierte AS24-Such-URL
+- [x] Output mappt direkt auf `CarOffer` (JSON-LD + Spec-Labels, fehlende Felder weggelassen/Default)
+- [x] Gruppierung **Marke + Modell + Variante** → eigener `slug` (z. B. `vw-golf-gti`, `mercedes-c63`)
+- [x] Modell-Felder abgeleitet/Default: `region` aus Marken-Map, `type` aus bodyType, `warranty`/Texte Default
+- [x] Upsert in MongoDB mit Offer-Merge per `listingId` (kein Duplizieren bei Re-Runs)
+- [ ] **BLOCKER: Cloudflare** — AS24.ch serviert Bot-Schutzseite. Stealth (`playwright-extra` +
+      `puppeteer-extra-plugin-stealth`), webdriver-Maskierung, Challenge-Wait, headless+headful alle
+      aus Agent-Kontext (kein echter Desktop) blockiert. Nächster Test: User lokal mit `HEADLESS=false`.
+      Fallback-Optionen: echtes Chrome-Profil (`launchPersistentContext`, `channel:'chrome'`) +
+      Manuell-lösen-Pause, oder Quelle überdenken.
+- Hilfs-Script `scraper/src/debug.ts` zum Inspizieren der Rohdaten eines einzelnen Inserats.
 
 ### Schritt 4 — Suchen speichern (in DB, nicht nur Session)
 - [ ] Form Action „Suche speichern" auf der Ergebnisliste

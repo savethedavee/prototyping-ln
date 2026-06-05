@@ -11,10 +11,13 @@
 	persistSearchInputs();
 	const inputs = get(searchInputs);
 
+
 	const results: CarModelWithScore[] = data.cars
 		.map((car) => ({ ...car, matchScore: matchScore(car, inputs) }))
-		.filter((car) => car.matchScore >= 60)
-		.sort((a, b) => b.matchScore - a.matchScore);
+		.filter((car) => car.matchScore >= 1)
+		.sort((a, b) => b.matchScore - a.matchScore)
+        .slice(0, 30);;
+
 
 	let compareSet = $state<Set<string>>(new Set());
 

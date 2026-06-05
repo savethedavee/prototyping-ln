@@ -214,3 +214,12 @@ export function getMinPrice(car: CarModel, condition: 'new' | 'used' | 'any' = '
 export function getPrimaryOffer(car: CarModel): CarOffer | undefined {
     return car.offers.find((o) => o.condition === 'new') ?? car.offers[0];
 }
+
+/** Best display image: the model image, else the first image from any offer. */
+export function getImageUrl(car: CarModel): string | undefined {
+    if (car.imageUrl) return car.imageUrl;
+    for (const offer of car.offers) {
+        if (offer.images?.length) return offer.images[0];
+    }
+    return undefined;
+}
