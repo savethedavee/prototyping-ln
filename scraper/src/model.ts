@@ -64,7 +64,9 @@ const BODY_TYPE_LABEL: Record<BodyType, string> = {
 	limousine: 'Limousine',
 	kompakt: 'Kompaktklasse',
 	kleinwagen: 'Kleinwagen',
-	van: 'Van'
+	van: 'Van',
+	coupe: 'Coupé',
+	cabrio: 'Cabriolet'
 };
 
 export interface ModelIdentity {

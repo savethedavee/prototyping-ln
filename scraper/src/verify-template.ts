@@ -88,5 +88,21 @@ console.log('\n=== template_kleinwagen.html (Peugeot 208) ===');
 	console.log('  bodyType =', o.bodyType ?? 'undefined');
 }
 
+// --- template_coupe.html : Mercedes-AMG GT (AS24 bodyType "coupe") ------------
+console.log('\n=== template_coupe.html (Mercedes-AMG GT) ===');
+{
+	const { offer: o } = parse('template_coupe.html');
+	check('bodyType coupe', o.bodyType === 'coupe');
+	console.log('  bodyType =', o.bodyType ?? 'undefined');
+}
+
+// --- template_cabrio.html : Mercedes-AMG GT Roadster (AS24 "cabriolet") -------
+console.log('\n=== template_cabrio.html (Mercedes-AMG GT Roadster) ===');
+{
+	const { offer: o } = parse('template_cabrio.html');
+	check('bodyType cabrio', o.bodyType === 'cabrio');
+	console.log('  bodyType =', o.bodyType ?? 'undefined');
+}
+
 console.log(`\n${failed === 0 ? '✔ all passed' : `✖ ${failed} failed`}`);
 process.exit(failed === 0 ? 0 : 1);

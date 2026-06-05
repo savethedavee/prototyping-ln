@@ -1,4 +1,12 @@
-export type BodyType = 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
+export type BodyType =
+	| 'suv'
+	| 'kombi'
+	| 'limousine'
+	| 'kompakt'
+	| 'kleinwagen'
+	| 'van'
+	| 'coupe'
+	| 'cabrio';
 
 export interface CarOffer {
 	condition: 'new' | 'used';

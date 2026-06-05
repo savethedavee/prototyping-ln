@@ -77,26 +77,62 @@ const USAGE_CRITERIA: Record<string, UsageCriteria> = {
             {any: ['sportSeats'], points: 10},
             {any: ['leather'], points: 5},
         ],
+        carType: {types: ['Coupé', 'Cabriolet'], points: 8},
         brands: {brands: ['BMW', 'Audi', 'Mercedes', 'Cupra', 'Tesla'], points: 5},
     },
 };
 
-export function matchScore(car: CarModel, inputs: SearchInputs): number {
+export interface MatchBreakdown {
+    total: number;
+    base: number;        // bis 30 (enthält vorerst die ausgesetzten Ausstattungs-Punkte)
+    usage: number;       // bis 40
+    brand: number;       // bis 10
+    priorities: number;  // bis 10
+    budget: number;      // bis  5
+    color: number;       // bis  5
+    relevantOffers: number;
+    reason?: string;     // gesetzt, wenn ein harter Filter den Score auf 0 zwingt
+}
+
+/** Full score breakdown for a car, incl. why it scored 0 (hard filters). */
+export function matchBreakdown(car: CarModel, inputs: SearchInputs): MatchBreakdown {
+    const zero = { base: 0, usage: 0, brand: 0, priorities: 0, budget: 0, color: 0 };
+
     const relevant = getRelevantOffers(car, inputs);
-    if (relevant.length === 0) return 0;
-    if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) return 0;
+    if (relevant.length === 0) {
+        return {
+            total: 0,
+            ...zero,
+            relevantOffers: 0,
+            reason: 'kein Angebot im Filter (Budget/Zustand/Antrieb/Karosserie)'
+        };
+    }
+    if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) {
+        return {
+            total: 0,
+            ...zero,
+            relevantOffers: relevant.length,
+            reason: `Region ${car.region} ≠ ${inputs.brandRegion}`
+        };
+    }
 
     const profile = buildOfferProfile(relevant);
+    // Ausstattung ist vorerst aus der Wertung genommen (Scraper liefert keine
+    // Features). Die 15 Punkte sind in die Basis (15 → 30) gewandert, damit die
+    // Skala bei 0–100 bleibt.
+    const base = 30;
+    const usage = scoreForUsage(car, profile, inputs);
+    const brand = scoreForBrand(car, inputs);
+    const priorities = scoreForPriorities(profile, inputs);
+    const budget = scoreForBudget(car, inputs);
+    const color = scoreForColor(profile, inputs);
+    const total = Math.min(100, base + usage + brand + priorities + budget + color);
 
-    let score = 15                                      // Basis
-        + scoreForUsage(car, profile, inputs)   // bis 40 Punkte
-        + scoreForFeatures(profile, inputs)     // bis 15 Punkte
-        + scoreForBrand(car, inputs)            // bis 10 Punkte
-        + scoreForPriorities(profile, inputs)   // bis 10 Punkte
-        + scoreForBudget(car, inputs)           // bis  5 Punkte
-        + scoreForColor(profile, inputs);
+    return { total, base, usage, brand, priorities, budget, color, relevantOffers: relevant.length };
+}
 
-    return Math.min(100, score);
+export function matchScore(car: CarModel, inputs: SearchInputs): number {
+    return matchBreakdown(car, inputs).total;
 }
 
 export function getRelevantOffers(car: CarModel, inputs: SearchInputs): CarOffer[] {
@@ -124,22 +160,14 @@ function buildOfferProfile(offers: CarOffer[]): OfferProfile {
 }
 
 function scoreForUsage(car: CarModel, profile: OfferProfile, inputs: SearchInputs): number {
-    if (inputs.usage.length === 0) return 20;
+    if (inputs.usage.length === 0) return 40; // kein Nutzungszweck gewählt → egal → volle Punkte
     const total = inputs.usage.reduce((sum, u) => sum + evaluateUsage(car, profile, u), 0);
     return Math.min(40, Math.round(total / inputs.usage.length));
 }
 
-function scoreForFeatures(profile: OfferProfile, inputs: SearchInputs): number {
-    if (inputs.features.length > 0) {
-        const matches = inputs.features.filter((f) => profile.features.includes(f)).length;
-        return Math.round((matches / inputs.features.length) * 15);
-    }
-    return Math.min(10, Math.round(profile.features.length * 0.8));
-}
-
 function scoreForBrand(car: CarModel, inputs: SearchInputs): number {
-    if (inputs.brands && inputs.brands.length > 0 && inputs.brands.includes(car.brand)) return 10;
-    return 0;
+    if (!inputs.brands || inputs.brands.length === 0) return 10; // keine Marken-Präferenz → egal → volle Punkte
+    return inputs.brands.includes(car.brand) ? 10 : 0;
 }
 
 function scoreForPriorities(profile: OfferProfile, inputs: SearchInputs): number {
@@ -159,7 +187,7 @@ function scoreForBudget(car: CarModel, inputs: SearchInputs): number {
 }
 
 function scoreForColor(profile: OfferProfile, inputs: SearchInputs): number {
-    if (inputs.colors.length === 0) return 0;
+    if (inputs.colors.length === 0) return 5; // Farbe egal → volle Punkte
     return inputs.colors.some((c) => profile.colors.includes(c)) ? 5 : 0;
 }
 

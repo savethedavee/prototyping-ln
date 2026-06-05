@@ -1,9 +1,5 @@
 import { resolve } from 'node:path';
-import { chromium } from 'playwright-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import type { BrowserContext, Page } from 'playwright';
-
-chromium.use(StealthPlugin());
+import { chromium, type BrowserContext, type Page } from 'playwright';
 
 export interface RawScrape {
 	url: string;
@@ -32,20 +28,18 @@ export async function launch(): Promise<BrowserContext> {
 	const userDataDir = process.env.CHROME_PROFILE || resolve('.chrome-profile');
 	const ctx = await chromium.launchPersistentContext(userDataDir, {
 		headless,
-		// On a headful local run, drive the real installed Chrome instead of the
-		// bundled Chromium — it clears Cloudflare far more reliably. Falls back to
-		// bundled Chromium automatically if Chrome isn't installed.
-		...(headless ? {} : { channel: 'chrome' }),
-		userAgent: UA,
+		// Headful → drive the real installed Chrome. Crucially, do NOT override its
+		// userAgent: a fake UA contradicts the real sec-ch-ua client hints / JA3
+		// fingerprint, which makes Cloudflare reject the clearance and re-challenge
+		// in a loop. Only the bundled headless Chromium gets a believable UA.
+		...(headless ? { userAgent: UA } : { channel: 'chrome' }),
 		viewport: { width: 1366, height: 900 },
 		locale: 'de-CH',
 		timezoneId: 'Europe/Zurich',
 		extraHTTPHeaders: { 'Accept-Language': 'de-CH,de;q=0.9,en;q=0.8' },
+		// This flag makes navigator.webdriver report false *natively* — no JS
+		// override needed (a patched getter is itself detectable).
 		args: ['--disable-blink-features=AutomationControlled']
-	});
-	// Minimal stealth: hide the automation flag Cloudflare looks for.
-	await ctx.addInitScript(() => {
-		Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
 	});
 	return ctx;
 }

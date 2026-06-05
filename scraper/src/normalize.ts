@@ -40,8 +40,11 @@ const BODY_MAP: { match: RegExp; value: BodyType }[] = [
 	{ match: /kombi|station.?wagon|estate/i, value: 'kombi' },
 	{ match: /van|bus|kleinbus|monospace|kompaktvan|mpv|minivan|multivan|people.?carrier/i, value: 'van' },
 	{ match: /kleinwagen|small.?car|micro.?car|city.?car|micro/i, value: 'kleinwagen' },
+	// Cabrio before coupe so a "coupe-cabriolet" is treated as a convertible.
+	{ match: /cabrio|cabriolet|convertible|roadster/i, value: 'cabrio' },
+	{ match: /coupé|coupe/i, value: 'coupe' },
 	{ match: /limousine|sedan|saloon/i, value: 'limousine' },
-	{ match: /kompakt|compact|coupé|coupe|cabrio|cabriolet|convertible|roadster|sport/i, value: 'kompakt' }
+	{ match: /kompakt|compact|sport/i, value: 'kompakt' }
 ];
 
 /** Coerce a JSON-LD value (string or number) into a number. */

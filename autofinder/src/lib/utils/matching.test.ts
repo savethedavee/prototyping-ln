@@ -244,32 +244,36 @@ describe('matchScore — soft scoring', () => {
 		expect(matchScore(c, inputs)).toBeLessThanOrEqual(100);
 	});
 
-	it('Marken-Treffer erhöht Score um 10', () => {
-		const base = makeCar();
-		const withBrand    = matchScore(base, makeInputs({ brands: ['VW'] }));
-		const withoutBrand = matchScore(base, makeInputs({ brands: [] }));
-		expect(withBrand - withoutBrand).toBe(10);
+	it('Marke egal oder passend gibt volle 10; nicht passende Marke gibt 10 weniger', () => {
+		const c = makeCar({ brand: 'VW' });
+		const egal     = matchScore(c, makeInputs({ brands: [] }));
+		const match    = matchScore(c, makeInputs({ brands: ['VW'] }));
+		const mismatch = matchScore(c, makeInputs({ brands: ['Toyota'] }));
+		expect(match).toBe(egal);          // passende Marke = wie egal (volle Punkte)
+		expect(egal - mismatch).toBe(10);  // nicht passende Marke = 10 weniger
 	});
 
-	it('Farb-Treffer gibt +5 Punkte', () => {
+	it('Farbe egal oder passend gibt volle 5; nicht passende Farbe gibt 5 weniger', () => {
 		const c = makeCar({ color: 'schwarz' });
-		const withColor    = matchScore(c, makeInputs({ colors: ['schwarz'] }));
-		const withoutColor = matchScore(c, makeInputs({ colors: [] }));
-		expect(withColor - withoutColor).toBe(5);
+		const egal     = matchScore(c, makeInputs({ colors: [] }));
+		const match    = matchScore(c, makeInputs({ colors: ['schwarz'] }));
+		const mismatch = matchScore(c, makeInputs({ colors: ['rot'] }));
+		expect(match).toBe(egal);         // passende Farbe = wie egal
+		expect(egal - mismatch).toBe(5);  // nicht passende Farbe = 5 weniger
 	});
 
-	it('keine Farb-Bonus wenn Farbe nicht vorhanden', () => {
-		const c = makeCar({ color: 'schwarz' });
-		const withColor    = matchScore(c, makeInputs({ colors: ['rot'] }));
-		const withoutColor = matchScore(c, makeInputs({ colors: [] }));
-		expect(withColor).toBe(withoutColor);
+	it('kein Nutzungszweck (egal) gibt volle Nutzungspunkte', () => {
+		const c = makeCar();
+		const egal    = matchScore(c, makeInputs({ usage: [] }));
+		const poorFit = matchScore(c, makeInputs({ usage: ['family'] }));
+		expect(egal).toBeGreaterThan(poorFit);
 	});
 
-	it('100% Feature-Match gibt mehr Punkte als 0% Match', () => {
+	it('Ausstattung ist aus der Wertung genommen — Features ändern den Score nicht', () => {
 		const c = makeCar({ features: ['climate', 'carplay', 'navigation'] });
 		const full = matchScore(c, makeInputs({ features: ['climate', 'carplay', 'navigation'] }));
 		const none = matchScore(c, makeInputs({ features: ['leather', 'awd', 'hud'] }));
-		expect(full).toBeGreaterThan(none);
+		expect(full).toBe(none);
 	});
 
 	it('Priorität Verbrauch ≥4 + Elektro gibt Bonus', () => {

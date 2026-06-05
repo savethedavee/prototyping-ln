@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { get } from 'svelte/store';
 	import { searchInputs, persistSearchInputs } from '$lib/stores/questionnaire';
-	import { matchScore } from '$lib/utils/matching';
+	import { matchBreakdown, matchScore } from '$lib/utils/matching';
 	import CarCard from '$lib/components/CarCard.svelte';
 	import type { CarModelWithScore } from '$lib/types';
 	import type { PageData } from './$types';
@@ -17,6 +18,31 @@
 		.filter((car) => car.matchScore >= 1)
 		.sort((a, b) => b.matchScore - a.matchScore)
         .slice(0, 30);;
+
+	// Debug: übersichtliche Score-Aufschlüsselung aller Modelle in der Konsole.
+	if (browser) {
+		const rows = data.cars
+			.map((car) => {
+				const b = matchBreakdown(car, inputs);
+				return {
+					Modell: car.name,
+					Total: b.total,
+					Basis: b.base,
+					Nutzung: b.usage,
+					Marke: b.brand,
+					Prioritäten: b.priorities,
+					Budget: b.budget,
+					Farbe: b.color,
+					Angebote: b.relevantOffers,
+					Grund: b.reason ?? ''
+				};
+			})
+			.sort((a, b) => b.Total - a.Total);
+		console.groupCollapsed(`🎯 Match-Scores — ${rows.length} Modelle (Eingaben siehe unten)`);
+		console.log('Such-Eingaben:', inputs);
+		console.table(rows);
+		console.groupEnd();
+	}
 
 
 	let compareSet = $state<Set<string>>(new Set());

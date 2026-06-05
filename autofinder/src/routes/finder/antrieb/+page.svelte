@@ -32,7 +32,9 @@
 		{ key: 'limousine', label: 'Limousine', sub: 'Klassisch, elegant', icon: '🏎️' },
 		{ key: 'kompakt', label: 'Kompaktwagen', sub: 'Wendig, alltagstauglich', icon: '🚘' },
 		{ key: 'kleinwagen', label: 'Kleinwagen', sub: 'Kompakt für die Stadt', icon: '🛺' },
-		{ key: 'van', label: 'Van / Minivan', sub: 'Maximal Platz, 7 Sitze', icon: '🚐' }
+		{ key: 'van', label: 'Van / Minivan', sub: 'Maximal Platz, 7 Sitze', icon: '🚐' },
+		{ key: 'coupe', label: 'Coupé', sub: 'Sportlich, 2 Türen', icon: '🏎️' },
+		{ key: 'cabrio', label: 'Cabriolet', sub: 'Offenes Fahren', icon: '🌤️' }
 	];
 
 	let openToAll = $state($searchInputs.drivetrain.length === 0);

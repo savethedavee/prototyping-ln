@@ -15,7 +15,7 @@ const PRICE_BANDS: { label: string; min: number; max: number }[] = [
 	{ label: '>70k', min: 70_000, max: Infinity }
 ];
 
-const BODY_TYPES = ['suv', 'kombi', 'limousine', 'kompakt', 'kleinwagen', 'van'];
+const BODY_TYPES = ['suv', 'kombi', 'limousine', 'kompakt', 'kleinwagen', 'van', 'coupe', 'cabrio'];
 const DRIVETRAINS = ['combustion', 'hybrid', 'electric'];
 const CONDITIONS = ['used', 'new'];
 const REGIONS = ['europe', 'asia', 'america'];

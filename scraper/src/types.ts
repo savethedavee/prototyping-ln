@@ -2,7 +2,15 @@
 // This package is intentionally standalone (no workspace), so the shape is
 // copied here. Keep in sync with the app if the data model changes.
 
-export type BodyType = 'suv' | 'kombi' | 'limousine' | 'kompakt' | 'kleinwagen' | 'van';
+export type BodyType =
+	| 'suv'
+	| 'kombi'
+	| 'limousine'
+	| 'kompakt'
+	| 'kleinwagen'
+	| 'van'
+	| 'coupe'
+	| 'cabrio';
 
 export interface CarOffer {
 	condition: 'new' | 'used';
