@@ -13,7 +13,7 @@
 	}
 </script>
 
-<nav class="border-b border-gray-200 bg-white">
+<nav class="sticky top-0 z-30 border-b border-gray-200 bg-white">
 	<div class="mx-auto max-w-6xl px-4">
 		<div class="flex h-16 items-center justify-between">
 			<a href="/" class="text-xl font-bold tracking-tight text-gray-900">
