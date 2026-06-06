@@ -69,6 +69,7 @@ export interface SearchInputs {
 
 export interface SavedSearch {
 	_id?: string;
+	userId: string;
 	name: string;
 	createdAt: Date | string;
 	updatedAt: Date | string;

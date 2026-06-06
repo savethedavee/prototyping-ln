@@ -12,7 +12,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 		// searches can be tied to a user later.
 		session({ session, token }) {
 			if (session.user && token.sub) {
-				(session.user as { id?: string }).id = token.sub;
+				session.user.id = token.sub;
 			}
 			return session;
 		}

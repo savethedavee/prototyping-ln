@@ -12,4 +12,16 @@ declare global {
 	}
 }
 
+// Expose the user id (Google "sub", set in the auth session callback).
+declare module '@auth/core/types' {
+	interface Session {
+		user?: {
+			id?: string;
+			name?: string | null;
+			email?: string | null;
+			image?: string | null;
+		};
+	}
+}
+
 export {};
