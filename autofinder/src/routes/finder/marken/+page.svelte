@@ -9,16 +9,29 @@
 		{ key: 'any', label: 'Egal', sub: 'Alle Regionen zeigen' }
 	];
 
-	const BRANDS = [
-		'VW', 'BMW', 'Mercedes', 'Audi', 'Skoda', 'Renault',
-		'Toyota', 'Hyundai', 'Mazda', 'Honda', 'Tesla', 'Volvo',
-		'Ford', 'Fiat', 'Opel', 'Peugeot', 'Seat', 'Kia'
-	];
+	const BRANDS_BY_REGION: Record<string, string[]> = {
+		europe: ['VW', 'BMW', 'Mercedes', 'Audi', 'Skoda', 'Renault', 'Volvo', 'Fiat', 'Opel', 'Peugeot', 'Seat'],
+		asia: ['Toyota', 'Hyundai', 'Mazda', 'Honda', 'Kia'],
+		america: ['Tesla', 'Ford']
+	};
+	const ALL_BRANDS = [...BRANDS_BY_REGION.europe, ...BRANDS_BY_REGION.asia, ...BRANDS_BY_REGION.america];
 
 	let selectedBrands = $derived($searchInputs.brands ?? []);
 
+	// Bei gewählter Region nur deren Marken zeigen; sonst (egal/keine) alle.
+	let visibleBrands = $derived(
+		!$searchInputs.brandRegion || $searchInputs.brandRegion === 'any'
+			? ALL_BRANDS
+			: (BRANDS_BY_REGION[$searchInputs.brandRegion] ?? ALL_BRANDS)
+	);
+
 	function setRegion(key: string) {
-		searchInputs.update((s) => ({ ...s, brandRegion: key }));
+		searchInputs.update((s) => {
+			// Bereits gewählte Marken, die nicht zur neuen Region gehören, verwerfen.
+			const allowed = key === 'any' ? null : BRANDS_BY_REGION[key];
+			const brands = allowed ? (s.brands ?? []).filter((b) => allowed.includes(b)) : (s.brands ?? []);
+			return { ...s, brandRegion: key, brands };
+		});
 	}
 
 	function toggleBrand(brand: string) {
@@ -81,7 +94,7 @@
 
 	<h2 class="mt-8 text-sm font-medium uppercase tracking-wider text-gray-400">Konkrete Marken</h2>
 	<div class="mt-3 flex flex-wrap gap-2">
-		{#each BRANDS as brand}
+		{#each visibleBrands as brand}
 			{@const selected = selectedBrands.includes(brand)}
 			<button
 				onclick={() => toggleBrand(brand)}
