@@ -58,6 +58,6 @@ Kompakte Referenz. Detaillierte Begründungen siehe Word-Dokument (separat).
 ## Was NICHT entschieden ist
 
 Diese Punkte sind bewusst offen gehalten und können während der Implementierung entschieden werden:
-- Genaue Match-Score-Formel (Vorschlag in CLAUDE.md, darf vereinfacht werden)
+- Genaue Match-Score-Formel
 - Welche konkreten Modelle in der Seed-Datenbank landen (15–20 Stück, Mischung über Marken/Antriebe/Preisklassen)
 - Visuelles Feinschliff (Farben, exakte Spacings, Mikrointeraktionen)
