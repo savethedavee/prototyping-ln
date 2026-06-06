@@ -262,6 +262,13 @@ describe('matchScore — soft scoring', () => {
 		expect(egal - mismatch).toBe(5);  // nicht passende Farbe = 5 weniger
 	});
 
+	it('rohe Farbstrings (z.B. "Schwarz mét.", "black") matchen den Filter-Key', () => {
+		const egal = matchScore(makeCar({ color: 'schwarz' }), makeInputs({ colors: [] }));
+		for (const raw of ['Schwarz', 'Schwarz mét.', 'black', 'BLACK']) {
+			expect(matchScore(makeCar({ color: raw }), makeInputs({ colors: ['schwarz'] }))).toBe(egal);
+		}
+	});
+
 	it('kein Nutzungszweck (egal) gibt volle Nutzungspunkte', () => {
 		const c = makeCar();
 		const egal    = matchScore(c, makeInputs({ usage: [] }));
@@ -269,11 +276,11 @@ describe('matchScore — soft scoring', () => {
 		expect(egal).toBeGreaterThan(poorFit);
 	});
 
-	it('Ausstattung ist aus der Wertung genommen — Features ändern den Score nicht', () => {
+	it('Ausstattung fließt mit geringem Gewicht ein (max. 3 Punkte)', () => {
 		const c = makeCar({ features: ['climate', 'carplay', 'navigation'] });
 		const full = matchScore(c, makeInputs({ features: ['climate', 'carplay', 'navigation'] }));
 		const none = matchScore(c, makeInputs({ features: ['leather', 'awd', 'hud'] }));
-		expect(full).toBe(none);
+		expect(full - none).toBe(3); // alle Wünsche erfüllt vs. keiner = nur 3 Punkte
 	});
 
 	it('Priorität Verbrauch ≥4 + Elektro gibt Bonus', () => {

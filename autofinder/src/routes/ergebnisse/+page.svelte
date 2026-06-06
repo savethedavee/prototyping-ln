@@ -5,6 +5,7 @@
 	import { searchInputs, persistSearchInputs, editingSearchId, setEditingSearchId } from '$lib/stores/questionnaire';
 	import { matchBreakdown, matchScore } from '$lib/utils/matching';
 	import CarCard from '$lib/components/CarCard.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import type { CarModelWithScore } from '$lib/types';
 	import type { PageData, ActionData } from './$types';
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -37,6 +38,7 @@
 					Prioritäten: b.priorities,
 					Budget: b.budget,
 					Farbe: b.color,
+					Ausstattung: b.features,
 					Angebote: b.relevantOffers,
 					Grund: b.reason ?? ''
 				};
@@ -193,9 +195,13 @@
 	</div>
 </div>
 
+<div class="mt-auto">
+	<Footer />
+</div>
+
 <!-- Sticky Compare Footer -->
 {#if compareSet.size >= 2}
-	<div class="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white px-4 py-3 shadow-lg">
+	<div class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white px-4 py-3 shadow-lg">
 		<div class="mx-auto flex max-w-4xl items-center justify-between">
 			<span class="text-sm text-gray-600">
 				{compareSet.size} Modelle zum Vergleichen ausgewählt

@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
 	import { searchInputs } from '$lib/stores/questionnaire';
-	import { getImageUrl, getMinPrice, getPrimaryOffer, matchScore } from '$lib/utils/matching';
+	import { getImageUrl, getMinPrice, getPrimaryOffer, matchReasons, matchScore } from '$lib/utils/matching';
 	import OfferGallery from '$lib/components/OfferGallery.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+	import type { CarOffer } from '$lib/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const car = $derived(data.car);
 	const score = $derived(car ? matchScore(car, get(searchInputs)) : 0);
+	const reasons = $derived(car ? matchReasons(car, get(searchInputs)) : []);
 
 	const drivetrainLabel: Record<string, string> = {
 		combustion: 'Verbrenner',
@@ -22,7 +25,6 @@
 	};
 
 	const primary = $derived(car ? getPrimaryOffer(car) : undefined);
-	const consumptionUnit = $derived(primary?.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km');
 	const priceFrom = $derived(car ? (getMinPrice(car) ?? 0) : 0);
 	const image = $derived(car ? getImageUrl(car) : undefined);
 	let imgFailed = $state(false);
@@ -51,6 +53,19 @@
 		}
 		return unique.sort((a, b) => a.price - b.price);
 	});
+
+	// Technical values now live inside each offer card. Only set values are
+	// listed, so sparse listings don't render empty "L/100km" / "0 PS" chips.
+	function offerSpecs(o: CarOffer): { label: string; value: string }[] {
+		const unit = o.drivetrain === 'electric' ? 'kWh/100km' : 'L/100km';
+		const s: { label: string; value: string }[] = [];
+		if (o.power) s.push({ label: 'Leistung', value: `${o.power} PS` });
+		if (o.consumption != null) s.push({ label: 'Verbrauch', value: `${o.consumption} ${unit}` });
+		if (o.trunkSize) s.push({ label: 'Kofferraum', value: `${o.trunkSize} L` });
+		if (o.co2 != null) s.push({ label: 'CO₂', value: o.co2 === 0 ? '0 (elektrisch)' : `${o.co2} g/km` });
+		if (o.seats) s.push({ label: 'Sitze', value: `${o.seats} Sitze` });
+		return s;
+	}
 </script>
 
 <svelte:head>
@@ -105,22 +120,16 @@
 					</div>
 					<span
 						class="flex-shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-sm font-semibold tabular-nums"
-						class:bg-green-100={score >= 85}
-						class:text-green-700={score >= 85}
-						class:bg-primary-light={score < 85}
-						class:text-primary={score < 85}
+						class:bg-green-100={score >= 80}
+						class:text-green-700={score >= 80}
+						class:bg-primary-light={score < 80}
+						class:text-primary={score < 80}
 					>
 						{score}&nbsp;% Match
 					</span>
 				</div>
 
 				<div class="mt-4 flex gap-3">
-					<a
-						href="/meine-suchen"
-						class="rounded-card border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:border-gray-400"
-					>
-						Speichern
-					</a>
 					<a
 						href="/ergebnisse"
 						class="rounded-card border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:border-gray-400"
@@ -134,37 +143,35 @@
 		<!-- Was das für dich bedeutet -->
 		<div class="mt-10">
 			<p class="text-xs font-semibold uppercase tracking-widest text-primary">Was das für dich bedeutet</p>
-			<div class="mt-3 rounded-card border border-gray-200 bg-gray-50 p-5">
-				<p class="leading-relaxed text-gray-700">{car.detailText}</p>
-			</div>
-		</div>
-
-		<!-- Technische Daten -->
-		<div class="mt-10">
-			<p class="text-xs font-semibold uppercase tracking-widest text-gray-400">Technische Daten</p>
-			<div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
-					<p class="text-xs text-gray-400">Leistung</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.power} PS</p>
+			{#if reasons.length > 0}
+				<ul class="mt-4 space-y-3">
+					{#each reasons as r}
+						<li class="flex items-start gap-3">
+							<svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+							</svg>
+							<span class="leading-snug">
+								<span class="font-medium text-gray-900">{r.label}</span>
+								<span class="text-gray-500"> — {r.detail}</span>
+							</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			{#if car.detailText}
+				<div
+					class="rounded-card border border-gray-200 bg-gray-50 p-5"
+					class:mt-6={reasons.length > 0}
+					class:mt-3={reasons.length === 0}
+				>
+					<p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Über das Modell</p>
+					<p class="mt-2 leading-relaxed text-gray-700">{car.detailText}</p>
 				</div>
-				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
-					<p class="text-xs text-gray-400">Verbrauch</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.consumption}</p>
-					<p class="text-xs text-gray-400">{consumptionUnit}</p>
-				</div>
-				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
-					<p class="text-xs text-gray-400">Kofferraum</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{primary?.trunkSize} L</p>
-				</div>
-				<div class="rounded-card border border-gray-200 bg-white p-4 shadow-card">
-					<p class="text-xs text-gray-400">Garantie</p>
-					<p class="mt-1 text-xl font-medium text-gray-900">{car.warranty} Jahre</p>
-				</div>
-			</div>
+			{/if}
 		</div>
 
 		<!-- Angebote -->
-		<div class="mt-12">
+		<div class="mt-10">
 			<p class="text-sm font-semibold uppercase tracking-widest text-gray-500">
 				Aktuelle Angebote{#if offers.length > 0} ({offers.length}){/if}
 			</p>
@@ -173,9 +180,10 @@
 					Aktuell liegen keine Angebote für dieses Modell vor.
 				</p>
 			{:else}
-				<div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+				<div class="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
 					{#each offers as offer}
-						<div class="flex flex-col rounded-card border border-gray-200 bg-white p-5 shadow-card">
+						{@const specs = offerSpecs(offer)}
+						<div class="flex flex-col rounded-card border border-gray-200 bg-white p-6 shadow-card">
 							<OfferGallery images={offer.images ?? []} alt={car.name} />
 							<div class="mt-4 flex items-center justify-between">
 								<span
@@ -191,7 +199,7 @@
 									<span class="text-sm text-gray-400">{offer.year}</span>
 								{/if}
 							</div>
-							<p class="mt-2 text-2xl font-semibold text-gray-900">
+							<p class="mt-2 text-3xl font-semibold text-gray-900">
 								CHF {offer.price.toLocaleString('de-CH')}
 							</p>
 							<div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
@@ -205,23 +213,36 @@
 									<span>{drivetrainLabel[offer.drivetrain]}</span>
 								{/if}
 							</div>
+
+							<!-- Technische Werte dieses Angebots -->
+							{#if specs.length > 0}
+								<dl class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-gray-100 pt-4 text-sm">
+									{#each specs as spec}
+										<div class="flex items-baseline justify-between gap-2">
+											<dt class="text-gray-400">{spec.label}</dt>
+											<dd class="font-medium text-gray-900">{spec.value}</dd>
+										</div>
+									{/each}
+								</dl>
+							{/if}
+
 							{#if offer.dealer || offer.location}
-								<p class="mt-2 text-sm text-gray-500">
+								<p class="mt-3 text-sm text-gray-500">
 									{[offer.dealer, offer.location].filter(Boolean).join(' · ')}
 								</p>
 							{/if}
-							<div class="mt-auto pt-5">
+							<div class="mt-auto pt-6">
 								{#if offer.url}
 									<a
 										href={offer.url}
 										target="_blank"
 										rel="noopener noreferrer"
-										class="block w-full rounded-card bg-gray-900 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
+										class="block w-full rounded-card bg-gray-900 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
 									>
 										Angebot ansehen →
 									</a>
 								{:else}
-									<span class="block w-full rounded-card bg-gray-100 py-2.5 text-center text-sm font-medium text-gray-400">
+									<span class="block w-full rounded-card bg-gray-100 py-3 text-center text-sm font-medium text-gray-400">
 										Kein Link verfügbar
 									</span>
 								{/if}
@@ -231,23 +252,9 @@
 				</div>
 			{/if}
 		</div>
-
-		<!-- Weitere Specs -->
-		<div class="mt-8 rounded-card border border-gray-200 bg-white p-4 shadow-card">
-			<div class="grid grid-cols-3 gap-4 text-sm">
-				<div>
-					<p class="text-gray-400">CO₂</p>
-					<p class="font-medium text-gray-900">{primary?.co2 === 0 ? '0 (elektrisch)' : `${primary?.co2} g/km`}</p>
-				</div>
-				<div>
-					<p class="text-gray-400">Sitze</p>
-					<p class="font-medium text-gray-900">{primary?.seats}</p>
-				</div>
-				<div>
-					<p class="text-gray-400">Herkunft</p>
-					<p class="font-medium text-gray-900">{{ europe: 'Europa', asia: 'Asien', america: 'Amerika' }[car.region]}</p>
-				</div>
-			</div>
-		</div>
 	</div>
 {/if}
+
+<div class="mt-auto">
+	<Footer />
+</div>

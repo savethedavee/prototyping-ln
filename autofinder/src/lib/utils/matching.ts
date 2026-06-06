@@ -84,19 +84,20 @@ const USAGE_CRITERIA: Record<string, UsageCriteria> = {
 
 export interface MatchBreakdown {
     total: number;
-    base: number;        // bis 30 (enthält vorerst die ausgesetzten Ausstattungs-Punkte)
+    base: number;        // bis 27
     usage: number;       // bis 40
     brand: number;       // bis 10
     priorities: number;  // bis 10
     budget: number;      // bis  5
     color: number;       // bis  5
+    features: number;    // bis  3 (bewusst geringer Einfluss)
     relevantOffers: number;
     reason?: string;     // gesetzt, wenn ein harter Filter den Score auf 0 zwingt
 }
 
 /** Full score breakdown for a car, incl. why it scored 0 (hard filters). */
 export function matchBreakdown(car: CarModel, inputs: SearchInputs): MatchBreakdown {
-    const zero = { base: 0, usage: 0, brand: 0, priorities: 0, budget: 0, color: 0 };
+    const zero = { base: 0, usage: 0, brand: 0, priorities: 0, budget: 0, color: 0, features: 0 };
 
     const relevant = getRelevantOffers(car, inputs);
     if (relevant.length === 0) {
@@ -117,22 +118,137 @@ export function matchBreakdown(car: CarModel, inputs: SearchInputs): MatchBreakd
     }
 
     const profile = buildOfferProfile(relevant);
-    // Ausstattung ist vorerst aus der Wertung genommen (Scraper liefert keine
-    // Features). Die 15 Punkte sind in die Basis (15 → 30) gewandert, damit die
-    // Skala bei 0–100 bleibt.
-    const base = 30;
+    // Ausstattung fließt bewusst nur mit max. 3 Punkten ein (geringer Einfluss).
+    // Die übrigen früheren Feature-Punkte bleiben in der Basis, damit die Skala
+    // bei 0–100 bleibt: 27 + 40 + 10 + 10 + 5 + 5 + 3 = 100.
+    const base = 27;
     const usage = scoreForUsage(car, profile, inputs);
     const brand = scoreForBrand(car, inputs);
     const priorities = scoreForPriorities(profile, inputs);
     const budget = scoreForBudget(car, inputs);
     const color = scoreForColor(profile, inputs);
-    const total = Math.min(100, base + usage + brand + priorities + budget + color);
+    const features = scoreForFeatures(profile, inputs);
+    const total = Math.min(100, base + usage + brand + priorities + budget + color + features);
 
-    return { total, base, usage, brand, priorities, budget, color, relevantOffers: relevant.length };
+    return { total, base, usage, brand, priorities, budget, color, features, relevantOffers: relevant.length };
 }
 
 export function matchScore(car: CarModel, inputs: SearchInputs): number {
     return matchBreakdown(car, inputs).total;
+}
+
+export interface MatchReason {
+    label: string;   // kurzes Schlagwort, z.B. "Familientauglich"
+    detail: string;  // konkrete Begründung, z.B. "5 Sitze, 480 L Kofferraum"
+}
+
+const DRIVETRAIN_LABEL: Record<string, string> = {
+    electric: 'Elektro',
+    hybrid: 'Hybrid',
+    combustion: 'Verbrenner',
+};
+
+const COLOR_LABEL: Record<string, string> = {
+    schwarz: 'Schwarz', weiss: 'Weiss', grau: 'Grau', silber: 'Silber',
+    blau: 'Blau', rot: 'Rot', gruen: 'Grün', braun: 'Braun', beige: 'Beige',
+};
+
+/**
+ * Personalisierte "Warum passt das zu dir"-Gründe, abgeleitet aus den echten
+ * Eingaben des Nutzers und den (gefilterten) Angeboten. Nur Gründe, die
+ * tatsächlich zutreffen, werden zurückgegeben — sonst nichts.
+ */
+export function matchReasons(car: CarModel, inputs: SearchInputs): MatchReason[] {
+    const offers = getRelevantOffers(car, inputs);
+    if (offers.length === 0) return [];
+    if (inputs.brandRegion && inputs.brandRegion !== 'any' && car.region !== inputs.brandRegion) return [];
+
+    const profile = buildOfferProfile(offers);
+    const minPrice = getMinPrice(car, inputs.condition);
+    const reasons: MatchReason[] = [];
+
+    // Nutzungszwecke (nur die gewählten, und nur wenn das Modell sie erfüllt).
+    for (const usage of inputs.usage) {
+        const r = usageReason(usage, profile);
+        if (r) reasons.push(r);
+    }
+
+    // Budget: konkret die günstigste passende Offer nennen.
+    if (minPrice != null && inputs.budgetMax < 100000 && minPrice <= inputs.budgetMax) {
+        reasons.push({
+            label: 'Im Budget',
+            detail: `ab CHF ${minPrice.toLocaleString('de-CH')} — dein Rahmen bis CHF ${inputs.budgetMax.toLocaleString('de-CH')}`,
+        });
+    }
+
+    // Prioritäten.
+    if (inputs.priorities.consumption >= 4 && profile.drivetrains.includes('electric')) {
+        reasons.push({ label: 'Sparsam', detail: 'Elektro — passt zu deiner Priorität niedriger Verbrauch' });
+    } else if (inputs.priorities.consumption >= 4 && profile.drivetrains.includes('hybrid')) {
+        reasons.push({ label: 'Sparsam', detail: 'Hybrid — passt zu deiner Priorität niedriger Verbrauch' });
+    }
+    if (inputs.priorities.power >= 4 && profile.maxPower >= 200) {
+        reasons.push({ label: 'Leistungsstark', detail: `${profile.maxPower} PS — passt zu deiner Priorität Leistung` });
+    }
+
+    // Gewünschter Antrieb (getRelevantOffers hat bereits gefiltert).
+    if (inputs.drivetrain.length > 0 && profile.drivetrains.length > 0) {
+        const dt = profile.drivetrains[0];
+        reasons.push({ label: 'Antrieb', detail: `${DRIVETRAIN_LABEL[dt] ?? dt} — wie von dir gewünscht` });
+    }
+
+    // Wunschmarke.
+    if (inputs.brands?.includes(car.brand)) {
+        reasons.push({ label: 'Wunschmarke', detail: `${car.brand} gehört zu deinen bevorzugten Marken` });
+    }
+
+    // Farbe (nur wenn ein Angebot die Wunschfarbe führt).
+    if (inputs.colors.length > 0) {
+        const offerColors = profile.colors.map(normalizeColor);
+        const match = inputs.colors.find((c) => offerColors.includes(c));
+        if (match) reasons.push({ label: 'Farbe', detail: `${COLOR_LABEL[match] ?? match} verfügbar` });
+    }
+
+    return reasons.slice(0, 5);
+}
+
+function usageReason(usage: string, p: OfferProfile): MatchReason | undefined {
+    switch (usage) {
+        case 'family': {
+            if (p.maxSeats < 5 && p.maxTrunkSize < 400) return undefined;
+            const bits: string[] = [];
+            if (p.maxSeats >= 5) bits.push(`${p.maxSeats} Sitze`);
+            if (p.maxTrunkSize > 0) bits.push(`${p.maxTrunkSize} L Kofferraum`);
+            return { label: 'Familientauglich', detail: bits.join(', ') };
+        }
+        case 'commute':
+            if (p.drivetrains.includes('electric')) return { label: 'Gut zum Pendeln', detail: 'Elektro — günstig im Alltag' };
+            if (p.drivetrains.includes('hybrid')) return { label: 'Gut zum Pendeln', detail: 'Hybrid — günstig im Alltag' };
+            if (isFinite(p.minConsumption) && p.minConsumption > 0 && p.minConsumption <= 5.5)
+                return { label: 'Gut zum Pendeln', detail: `sparsam mit ${p.minConsumption} L/100km` };
+            return undefined;
+        case 'city':
+            if (p.bodyTypes.some((b) => b === 'kleinwagen' || b === 'kompakt'))
+                return { label: 'Stadttauglich', detail: 'kompakte Karosserie' };
+            if (p.drivetrains.includes('electric'))
+                return { label: 'Stadttauglich', detail: 'Elektro — leise & lokal emissionsfrei' };
+            return undefined;
+        case 'leisure':
+            if (p.maxTrunkSize >= 400) return { label: 'Für Freizeit & Reisen', detail: `${p.maxTrunkSize} L Gepäckraum` };
+            return undefined;
+        case 'commercial': {
+            if (p.maxTrunkSize < 400 && p.maxPower < 150) return undefined;
+            const bits: string[] = [];
+            if (p.maxTrunkSize >= 400) bits.push(`${p.maxTrunkSize} L Laderaum`);
+            if (p.maxPower >= 150) bits.push(`${p.maxPower} PS`);
+            return { label: 'Für Gewerbe', detail: bits.join(', ') };
+        }
+        case 'sport':
+            if (p.maxPower >= 200) return { label: 'Sportlich', detail: `${p.maxPower} PS` };
+            return undefined;
+        default:
+            return undefined;
+    }
 }
 
 export function getRelevantOffers(car: CarModel, inputs: SearchInputs): CarOffer[] {
@@ -186,9 +302,36 @@ function scoreForBudget(car: CarModel, inputs: SearchInputs): number {
     return minPrice >= inputs.budgetMin && withinMax ? 5 : 0;
 }
 
+// Rohe Farbstrings (JSON-LD / Inserat) auf die Filter-Keys mappen, damit
+// "Schwarz", "black", "Schwarz mét." alle als 'schwarz' zählen. Groß-/
+// Kleinschreibung, Sprache und Zusätze werden so toleriert.
+export function normalizeColor(raw: string): string {
+    const s = raw.toLowerCase();
+    if (/schwarz|black/.test(s)) return 'schwarz';
+    if (/wei|white/.test(s)) return 'weiss';
+    if (/silber|silver/.test(s)) return 'silber';
+    if (/anthrazit|grau|grey|gray/.test(s)) return 'grau';
+    if (/blau|blue/.test(s)) return 'blau';
+    if (/rot|red|bordeaux/.test(s)) return 'rot';
+    if (/grün|gruen|green/.test(s)) return 'gruen';
+    if (/braun|brown/.test(s)) return 'braun';
+    if (/beige/.test(s)) return 'beige';
+    return s;
+}
+
 function scoreForColor(profile: OfferProfile, inputs: SearchInputs): number {
     if (inputs.colors.length === 0) return 5; // Farbe egal → volle Punkte
-    return inputs.colors.some((c) => profile.colors.includes(c)) ? 5 : 0;
+    const offerColors = profile.colors.map(normalizeColor);
+    return inputs.colors.some((c) => offerColors.includes(c)) ? 5 : 0;
+}
+
+// Ausstattung mit bewusst geringem Gewicht (max. 3 Punkte). Ohne Feature-Wünsche
+// neutral volle Punkte, sonst anteilig nach Trefferquote der gewünschten Features.
+function scoreForFeatures(profile: OfferProfile, inputs: SearchInputs): number {
+    const MAX = 3;
+    if (inputs.features.length === 0) return MAX;
+    const have = inputs.features.filter((f) => profile.features.includes(f)).length;
+    return Math.round((have / inputs.features.length) * MAX);
 }
 
 function evaluateUsage(car: CarModel, profile: OfferProfile, usage: string): number {

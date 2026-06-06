@@ -19,3 +19,13 @@ export async function getCarBySlug(slug: string): Promise<CarModel | undefined> 
 	const doc = await db.collection<CarModel>(COLLECTION).findOne({ slug });
 	return doc ? stripId(doc) : undefined;
 }
+
+export async function getCarsBySlugs(slugs: string[]): Promise<CarModel[]> {
+	if (slugs.length === 0) return [];
+	const db = await getDb();
+	const docs = await db
+		.collection<CarModel>(COLLECTION)
+		.find({ slug: { $in: slugs } })
+		.toArray();
+	return docs.map(stripId);
+}

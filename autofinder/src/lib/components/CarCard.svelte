@@ -99,10 +99,10 @@
 	<div class="flex flex-shrink-0 flex-col items-center justify-center gap-2 px-3">
 		<span
 			class="whitespace-nowrap rounded-full px-4 py-1.5 text-xl font-semibold tabular-nums"
-			class:bg-green-100={car.matchScore >= 85}
-			class:text-green-700={car.matchScore >= 85}
-			class:bg-primary-light={car.matchScore < 85}
-			class:text-primary={car.matchScore < 85}
+			class:bg-green-100={car.matchScore >= 80}
+			class:text-green-700={car.matchScore >= 80}
+			class:bg-primary-light={car.matchScore < 80}
+			class:text-primary={car.matchScore < 80}
 		>
 			{car.matchScore}&nbsp;% Match
 		</span>
