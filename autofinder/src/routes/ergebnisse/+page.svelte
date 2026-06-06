@@ -70,16 +70,44 @@
 		hybrid: 'Hybrid',
 		electric: 'Elektro'
 	};
+	const usageLabels: Record<string, string> = {
+		commute: 'Pendeln', family: 'Familie', leisure: 'Freizeit',
+		city: 'Stadt', commercial: 'Gewerbe', sport: 'Sport'
+	};
+	const bodyTypeLabels: Record<string, string> = {
+		suv: 'SUV', kombi: 'Kombi', limousine: 'Limousine', kompakt: 'Kompakt',
+		kleinwagen: 'Kleinwagen', van: 'Van', coupe: 'Coupé', cabrio: 'Cabrio'
+	};
+	const conditionLabels: Record<string, string> = { new: 'Neu', used: 'Gebraucht' };
+	const regionLabels: Record<string, string> = { europe: 'Europäisch', asia: 'Asiatisch', america: 'Amerikanisch' };
 
+	// Die wichtigsten aktiven Filter kurz als Chips (nur was wirklich gesetzt ist).
 	const activeFilters: string[] = [];
+	if (inputs.budgetMin > 0 || inputs.budgetMax < 100000) {
+		const max = inputs.budgetMax >= 100000 ? "100'000+" : inputs.budgetMax.toLocaleString('de-CH');
+		activeFilters.push(
+			inputs.budgetMin > 0
+				? `CHF ${inputs.budgetMin.toLocaleString('de-CH')} – ${max}`
+				: `bis CHF ${max}`
+		);
+	}
+	if (inputs.condition && inputs.condition !== 'any') {
+		activeFilters.push(conditionLabels[inputs.condition] ?? inputs.condition);
+	}
+	if (inputs.usage.length > 0) {
+		activeFilters.push(inputs.usage.map((u) => usageLabels[u] ?? u).join(', '));
+	}
 	if (inputs.drivetrain.length > 0) {
 		activeFilters.push(inputs.drivetrain.map((d) => drivetrainLabels[d]).join(' / '));
 	}
-	if (inputs.budgetMax < 100000) {
-		activeFilters.push(`bis CHF ${inputs.budgetMax.toLocaleString('de-CH')}`);
+	if (inputs.bodyTypes.length > 0) {
+		activeFilters.push(inputs.bodyTypes.map((b) => bodyTypeLabels[b] ?? b).join(', '));
 	}
 	if (inputs.brandRegion && inputs.brandRegion !== 'any') {
-		activeFilters.push({ europe: 'Europäisch', asia: 'Asiatisch', america: 'Amerikanisch' }[inputs.brandRegion] ?? '');
+		activeFilters.push(regionLabels[inputs.brandRegion] ?? '');
+	}
+	if (inputs.brands?.length) {
+		activeFilters.push(inputs.brands.join(', '));
 	}
 </script>
 
