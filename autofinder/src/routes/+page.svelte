@@ -35,7 +35,6 @@
 			>
 				Auto finden →
 			</button>
-			<p class="mt-3 text-xs text-gray-400">ca. 3 Minuten · Kostenlos · Keine Anmeldung nötig</p>
 		</div>
 	</section>
 
