@@ -13,16 +13,12 @@
 ![Playwright](https://img.shields.io/badge/Playwright-Scraper-2EAD33?logo=playwright&logoColor=white)
 ![Netlify](https://img.shields.io/badge/Netlify-Deploy-00C7B7?logo=netlify&logoColor=white)
 
+**Live-Demo:** &nbsp; [mein-auto-finder.netlify.app](https://mein-auto-finder.netlify.app)<br>
+**Repository:** &nbsp; [github.com/savethedavee/prototyping-ln](https://github.com/savethedavee/prototyping-ln)
+
 </div>
 
 > ℹ️ **Hinweis zur Ansicht:** Diese Dokumentation am besten mit einem **Markdown-fähigen Viewer** öffnen (z. B. auf **GitHub**, in der IDE-Vorschau von VS Code/WebStorm oder einem Markdown-Editor). Nur so werden **Bilder, Diagramme und Screenshots aus dem `context/`-Ordner** korrekt dargestellt — im reinen Texteditor fehlen diese und die Inhalte sind nicht vollständig verständlich.
-
-> 🟡 **Von dir auszufüllen (zentral):**
-> - **Live-URL (Netlify):** _[https://… eintragen]_
-> - **GitHub-Repository:** _[URL eintragen]_
-> - **Demo-Video:** _[Link/Datei eintragen]_
->
-> Diese drei Angaben sind für die Bewertung (Mindestanforderungen) verpflichtend.
 
 ## Inhaltsverzeichnis
 
@@ -80,8 +76,20 @@ Personen **vor einem Autokauf ohne tiefes technisches Fahrzeugwissen**:
 
 ### Weitere Stakeholder
 
-- **Anbieter / Händler** (potenzielle Weiterleitung zu echten Inseraten — perspektivisch Paid Placement).
-- **Datenquelle AutoScout24.ch** (siehe Scraper-Erweiterung, [Kap. 4](#4-erweiterungen)).
+Die folgende **Einfluss-/Interesse-Matrix** aus dem Modul "Strategisches Management" ordnet die Stakeholder ein (vertikal = Einfluss, horizontal = Interesse):
+
+![Stakeholder-Map: Einfluss-/Interesse-Matrix](context/images/artefakte/stakeholder-map.png)
+
+- **ZHAW / Dozierende** *(oben rechts — hoher Einfluss, hohes Interesse):* setzen den methodischen Rahmen und bewerten
+  das Projekt — sowohl grosser Einfluss als auch hohes Interesse am Resultat.
+- **Autokäufer:innen** *(oben rechts — primäre Zielgruppe):* definieren die Anforderungen und validieren den Prototyp in
+  der Evaluation. Ihr Feedback entscheidet, ob die Lösung taugt.
+- **AutoScout24** *(oben links — hoher Einfluss, geringes Interesse):* hat kein eigenes Projektinteresse, übt aber über
+  den Bot-Schutz grossen Einfluss aus — wird der Scraper blockiert, fehlen die realen Marktdaten.
+- **Testpersonen (Peers)** *(unten rechts — geringer Einfluss, hohes Interesse):* liefern wertvolles Feedback in der
+  Usability-Evaluation, haben aber keinen Einfluss auf Scope oder technische Entscheide.
+- **Händler / Anbieter** *(unten links — aktuell gering/gering):* perspektivisch interessant für Paid Placement und
+  Lead-Generierung, im Prototyp-Stadium aber weder aktiv involviert noch einflussreich.
 
 ---
 
@@ -138,8 +146,8 @@ Der Problemraum **„Autokauf & Modellwahl"** wurde analysiert:
 | **Auto Motor und Sport**   | Kurzfragebogen (4 Fragen) | Sehr oberflächlich, wenig packend            |
 | **AutoScout24 / Autohero** | Textlastige Ratgeber      | Kein interaktiver, personalisierter Flow     |
 
-**Identifizierte Lücke:** Kein bestehendes Tool kombiniert einen **ausführlichen, personalisierten Fragebogen** mit *
-*Match-Scoring** *und* **alltagssprachlicher Übersetzung** technischer Daten.
+**Identifizierte Lücke:** Kein bestehendes Tool kombiniert einen **ausführlichen, personalisierten Fragebogen**
+mit **Match-Scoring** *und* **alltagssprachlicher Übersetzung** technischer Daten.
 
 #### How-Might-We-Fragen
 
@@ -183,18 +191,26 @@ Entschieden wurde für den **geführten Fragebogen mit anschliessender Match-Sco
 
 #### End-to-End-Ablauf / User Journey
 
-Siehe Activity-Diagramme:
+Der Ablauf gliedert sich in den **Fragebogen-Hauptpfad** und zwei **Nebenworkflows** (Vergleich · Suche speichern):
 
-| Hauptworkflow                                         | Vergleichs-Workflow                                           |
-|-------------------------------------------------------|---------------------------------------------------------------|
-| ![Hauptworkflow](context/workflows/workflow-main.png) | ![Vergleich-Workflow](context/workflows/workflow-compare.png) |
+**1) Hauptpfad — vom Bedürfnis zum Angebot**
 
-#### Referenz-Mockup (Figma)
+![Fragebogen-Workflow: Landing → 6 Fragebogen-Schritte → Berechnung → Ergebnisliste → Modell-Detail → Anbieter-Link](context/images/artefakte/fragebogen_workflow.png)
 
-🔗 **Figma-Prototyp:** <https://www.figma.com/site/c3eeEbOgd9eKbPJffwAaRU/Prototyping-Woche-10?node-id=0-1&p=f>
+**2) Nebenworkflow — Vergleich**
+
+![Vergleich-Workflow: Ergebnisliste → 2–3 Modelle wählen → Vergleichsansicht mit Best-of-Hervorhebung → Entscheidung → Modell-Detail](context/images/artefakte/vergleich_workflow.png)
+
+**3) Nebenworkflow — Suche speichern & laden**
+
+![Suche-Workflow: Ergebnisliste → Suche speichern → Meine Suchen (Login) → Öffnen / Bearbeiten / Löschen](context/images/artefakte/suche_workflow.png)
+
+#### Referenz-Mockup
+
+Figma-Prototyp: <https://www.figma.com/site/c3eeEbOgd9eKbPJffwAaRU/Prototyping-Woche-10?node-id=0-1&p=f>
 
 <details>
-<summary>📐 <b>Mockup-Screens (klicken zum Aufklappen)</b></summary>
+<summary> <b>Mockup-Screens (klicken zum Aufklappen)</b></summary>
 
 | Startseite                                             | Budget                                             | Nutzung                                             |
 |--------------------------------------------------------|----------------------------------------------------|-----------------------------------------------------|
@@ -224,6 +240,7 @@ Siehe Activity-Diagramme:
 | **Auth**      | Auth.js (`@auth/sveltekit`) + Google OAuth | Etablierte Lösung, JWT-Sessions ohne eigene Session-DB.                  |
 | **Datenbank** | MongoDB                                    | Vorgabe                                                                  |
 | **Hosting**   | Netlify                                    | Vorgabe                                                                  |
+| **IDE**       | VS Code & WebStorm                         | VS Code (Vorgabe, gute Claude-Code-Integration) + WebStorm für vertrautes JetBrains-Refactoring. |
 
 ### 3.4 Prototype
 
@@ -360,11 +377,11 @@ abgedeckt (`matching.test.ts`).
   kein REST/fetch.
 - **State im Fragebogen:** Svelte-Stores + **`sessionStorage`** (Persistierung via `persistSearchInputs()`, Reset via
   `clearSearchInputs()`).
-- **Datenmodell:** `CarModel` (Modell-Familie) gruppiert mehrere `CarOffer` (einzelne Inserate). Bewusst **scraper-ready
-  ** entworfen.
+- **Datenmodell:** `CarModel` (Modell-Familie) gruppiert mehrere `CarOffer` (einzelne Inserate) — bewusst
+  **scraper-ready** entworfen.
 
 <details>
-<summary>📦 <b>Datenmodell im Detail</b></summary>
+<summary> <b>Datenmodell im Detail</b></summary>
 
 ```ts
 // CarOffer — ein konkretes Inserat
@@ -398,7 +415,7 @@ type SavedSearch = {
   `command = "npm run build"`).
 - **Env-Variablen:** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`.
 
-> 🟡 **Von dir auszufüllen:** Live-URL der deployten App.
+> https://mein-auto-finder.netlify.app/
 
 ##### Besondere Entscheidungen / Trade-offs
 
@@ -437,30 +454,66 @@ Die Usability-Evaluation wurde gemäss dem vorbereiteten Testskript durchgeführ
 
 #### Vorgehen
 
-- **Methode:** moderiertes Laut-Denken-Protokoll, on-site, minimale Intervention.
+- **Methode:** kurze Aufgaben-Einführung, danach **unmoderiertes** Beobachten nach dem Laut-Denken-Prinzip (minimale Intervention).
 - **Aufgaben:** szenariobasiert, ausgedruckt; Beobachtungs- und Issue-Tabelle (Nielsen-Schweregrad 0–4).
 
-**Szenario 1 (Auto finden):** *„Du pendelst täglich ~30 km, fährst am Wochenende in die Berge, Budget CHF 30'000–50'000,
-keine starke Markenvorliebe, möchtest ein sparsames Auto mit Rückfahrkamera."* → Aufgabe 1a (passende Modelle finden) +
-1b (Modell genauer ansehen).
-**Szenario 2 (Vergleich):** zwei interessante Modelle direkt gegenüberstellen.
+**Szenario 1 (Auto finden):** Die Testperson erhält nur eine kurze Ausgangslage und soll **ohne weitere Erklärung**
+selbständig ein für sie passendes Auto finden — Aufgabe 1a: passende Modelle finden; Aufgabe 1b: ein Modell genauer ansehen.
 
-> 🟡 **Von dir auszufüllen — Stichprobe & Kennzahlen:**
-> - **Stichprobe:** _[Anzahl Testpersonen, Profil — z. B. „3 Kommiliton:innen, 20–25 J., kein Auto-Fachwissen"]_
-> - **Erfolgsquote / Zeitbedarf:** _[z. B. „3/3 schlossen Szenario 1 ohne Hilfe ab, Ø 2:40 min"]_
+**Szenario 2 (Vergleich):** Zwei interessante Modelle direkt gegenüberstellen und anhand der Vergleichsansicht eine
+Entscheidung begründen.
+
+#### Durchführung & Stichprobe
+
+- **Datum / Ort:** 20.05.2026, Kleinklasse / on-site
+- **Stichprobe:** 3 Kommiliton:innen, 20–25 J., kein Auto-Fachwissen, starke UX Erfahrung vorhanden
+- **Setup:** deployter Prototyp, unmoderiert
+
+#### Kennzahlen
+
+| Aufgabe                       | Erfolgsquote | Ø Zeitbedarf | Schwierigkeit (0–4) |
+|-------------------------------|:------------:|:------------:|:-------------------:|
+| 1a — passendes Auto finden    |    2 / 3     |    01:30     |          3          |
+| 1b — Modell-Detail ansehen    |    3 / 3     |    00:47     |          1          |
+| 2a — Vergleich starten        |    3 / 3     |    01:12     |          2          |
+
+#### Qualitative Beobachtungen
+
+- **Workflow durchgängig verständlich:** Alle Testpersonen erfassten den Ablauf vom Fragebogen bis zur Ergebnisliste
+  ohne Erklärung und wussten an jedem Schritt, was zu tun war.
+- **UX positiv wahrgenommen:** Die geführte, aufgeräumte Bedienung wurde durchwegs gelobt — die Schritt-für-Schritt-Logik
+  wirkte unterstützend statt einschränkend.
+- **Fehlende Filter:** Mehreren Personen fehlten Eingrenzungsmöglichkeiten (insb. Karosserieform, Farbe, Zustand) — diese
+  wurden anschliessend als Erweiterung nachgezogen (siehe Findings unten und [Kap. 4.4](#4-erweiterungen)).
+- **Datenbasis noch zu dünn:** Die Auswahl an Modellen/Angeboten war für realistische Empfehlungen noch nicht
+  ausreichend. Als Massnahme entstand der **AutoScout24-Scraper**, der echte Inserate in die Datenbank einspeist
+  ([Kap. 4.1](#4-erweiterungen)).
 
 #### Beobachtungen & abgeleitete Verbesserungen
 
 Aus dem Test ergaben sich folgende Findings (→ Massnahmen in [Kap. 4](#4-erweiterungen) umgesetzt):
 
-| # | Beobachtung / Issue                                        |  Schweregrad   | Abgeleitete Verbesserung                                 |   Status    |
-|---|------------------------------------------------------------|:--------------:|----------------------------------------------------------|:-----------:|
-| 1 | Suchbegriffe blieben beim Start einer neuen Suche bestehen |   3 (gross)    | Reset der Eingaben beim Start einer neuen Suche          | ✅ umgesetzt |
-| 2 | Wichtige Filter fehlten (Aufbau / Farbe / Zustand)         |   2 (klein)    | Zusätzliche Filter: Karosserieform, Farbe, Neu/Gebraucht | ✅ umgesetzt |
-| 3 | Wunsch nach **Dark Mode**                                  | 1 (kosmetisch) | Site-weiter Dark Mode mit Toggle im Account-Flyout       | ✅ umgesetzt |
+| # | Beobachtung / Issue                                          |  Schweregrad   | Abgeleitete Verbesserung                                | Referenz (Kap. 4) |   Status   |
+|---|--------------------------------------------------------------|:--------------:|---------------------------------------------------------|:-----------------:|:----------:|
+| 1 | Suchbegriffe blieben beim Start einer neuen Suche bestehen   |   3 (gross)    | Reset der Eingaben beim Start einer neuen Suche         |        4.5        | umgesetzt  |
+| 2 | Filter **Karosserieform** fehlte zur Eingrenzung             |   2 (klein)    | Karosserie-Auswahl im Fragebogen + harter Filter        |        4.4        | umgesetzt  |
+| 3 | Filter **Farbe** fehlte                                      |   2 (klein)    | Farbauswahl im Fragebogen + Soft-Score (`scoreForColor`)|        4.4        | umgesetzt  |
+| 4 | Filter **Zustand** (Neu/Gebraucht) fehlte                    |   2 (klein)    | Pill-Buttons Neu/Gebraucht/Egal + harter Filter         |        4.4        | umgesetzt  |
+| 5 | Wunsch nach **Dark Mode**                                    | 1 (kosmetisch) | Site-weiter Dark Mode mit Toggle im Account-Flyout      |        4.3        |  umgesetzt |
+| 6 | **Datenbasis zu dünn** für realistische Empfehlungen         |   3 (gross)    | AutoScout24-Scraper für echte Inserate                  |        4.1        |  umgesetzt |
 
-> 🟡 **Von dir auszufüllen:** Restliche Issues aus eurer Issue-Tabelle (Ort, Ursache, Empfehlung) ergänzen — ideal 4–5
-> Einträge für eine starke Evidenz.
+#### Überprüfung der Annahmen
+
+Die drei in [Kap. 2](#2-lösungsidee) formulierten Hypothesen liessen sich im Test **alle bestätigen**:
+
+| # | Annahme |  Ergebnis  | Beobachtung im Test |
+|---|---------|:----------:|---------------------|
+| 1 | Nutzer:innen bevorzugen einen **geführten Prozess** gegenüber freier Filtersuche | bestätigt  | Die Testpersonen kamen ohne Erklärung durch den Fragebogen und empfanden die Schritt-für-Schritt-Führung als angenehm statt einschränkend. |
+| 2 | **Alltagssprachliche Übersetzung** schafft mehr Vertrauen als reine Zahlenwerte | bestätigt  | Der „Was das für dich bedeutet"-Block wurde klar als Mehrwert gegenüber einer reinen Spec-Liste (AutoScout24) wahrgenommen. |
+| 3 | Ein **Match-Score in %** ist intuitiver als Ranglisten oder Sterne |  bestätigt | Die Prozentzahl wurde sofort verstanden, als vertrauenswürdig eingestuft und als Sortier-/Entscheidungshilfe genutzt. |
+
+Damit trägt das zentrale Lösungskonzept — geführter Fragebogen + verständlicher Match-Score + Klartext-Erklärung — auch
+in der Praxis.
 
 #### Zusammenfassung der Resultate
 
@@ -472,95 +525,76 @@ Aus dem Test ergaben sich folgende Findings (→ Massnahmen in [Kap. 4](#4-erwei
 
 **Verbesserungspotenzial** (s. Tabelle oben) wurde unmittelbar in konkrete Erweiterungen überführt.
 
-> 🟡 **Von dir auszufüllen:** URL der **separat deployten, getesteten Version** (falls eine eigene Test-Deployment-URL
-> existiert).
-
 ---
 
 ## 4. Erweiterungen
 
-> Alle Erweiterungen wahren den Mindestumfang. Schema je Erweiterung: *Beschreibung & Nutzen · Wo umgesetzt · Referenz ·
-Aus Evaluation abgeleitet?*
+> Alle Erweiterungen wahren den Mindestumfang.
+
+Jede Erweiterung ist als kompakte Tabelle dokumentiert: **Nutzen · Umsetzung · Referenz · aus Evaluation abgeleitet?**
 
 ### 4.1 AutoScout24-Web-Scraper (eigenständiges Package)
 
-- **Beschreibung & Nutzen:** Ein **standalone Scraper** liest reale Inserate
-  von [AutoScout24.ch](https://www.autoscout24.ch) aus einer Such-URL und schreibt sie als `CarOffer`/`CarModel` in
-  dieselbe MongoDB wie die App. Damit basiert der Prototyp auf **echten Marktdaten** statt nur auf Mock-Daten — ein
-  deutlicher Qualitätssprung in Realismus und Datentiefe.
-- **Wo umgesetzt:**
-    - **Eigenes Package** `scraper/` (kein Workspace, eigene Dependencies): **Playwright** + `playwright-extra` +
-      `puppeteer-extra-plugin-stealth` (Bot-Erkennung umgehen), **tsx**, **mongodb**.
-    - **Extraktion** bevorzugt strukturierte Daten (**JSON-LD**), fällt auf deutsche Spec-Labels zurück (
-      `normalize.ts`); fehlende Felder werden weggelassen.
-    - **Gruppierung** nach *Marke + Modell + Variante* → eigener `slug`; **Deduplizierung** per `listingId` (`upsert`,
-      kein Duplizieren bei Re-Runs).
-    - **CLI:** `npm run scrape -- "<as24-such-url>" [--max N] [--dry]`; weitere Scripts: `coverage`, `check-fields`,
-      `verify` (Offline-Tests gegen gespeicherte HTML-Fixtures), `debug`.
-- **Referenz:** ausführliche Doku in [`scraper/README.md`](scraper/README.md); Datenmodell in
-  `autofinder/src/lib/types/`.
-- **Aus Evaluation abgeleitet?:** Nein — eigenständige technische Vertiefung (Datenbeschaffung).
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Ein **standalone Scraper** liest reale Inserate von [AutoScout24.ch](https://www.autoscout24.ch) aus einer Such-URL und schreibt sie als `CarOffer`/`CarModel` in dieselbe MongoDB wie die App → **echte Marktdaten** statt nur Mock-Daten (Qualitätssprung in Realismus & Datentiefe). |
+| **Umsetzung** | • Eigenes Package `scraper/` (Playwright + `playwright-extra` + `puppeteer-extra-plugin-stealth`, tsx, mongodb)<br>• Extraktion bevorzugt **JSON-LD**, Fallback auf deutsche Spec-Labels (`normalize.ts`)<br>• Gruppierung nach *Marke + Modell + Variante* → `slug`; Dedup per `listingId` (`upsert`)<br>• CLI `npm run scrape -- "<url>" [--max N] [--dry]`; zusätzlich `coverage`, `check-fields`, `verify`, `debug` |
+| **Referenz** | [`scraper/README.md`](scraper/README.md); Datenmodell in `autofinder/src/lib/types/` |
+| **Aus Evaluation?** | ✅ Ja — Issue #6 (zu dünne Datenbasis); zugleich eigenständige technische Vertiefung |
 
 ### 4.2 Authentifizierung mit Google (OAuth)
 
-- **Beschreibung & Nutzen:** Vollständiger **Login mit Google** via **Auth.js**. Geschützte Bereiche (z. B. *Meine
-  Suchen*) sind nur angemeldet erreichbar; gespeicherte Suchen lassen sich so an eine Nutzeridentität binden.
-- **Wo umgesetzt:**
-    - **Backend/Config:** `src/auth.ts` (Google-Provider, JWT-Sessions, eigene Login-Seite, `session`-Callback exponiert
-      die stabile Google-`sub` als `user.id`).
-    - **Route-Guard:** `src/hooks.server.ts` (`sequence(authHandle, guard)`) + `src/routes/+layout.server.ts` — leiten
-      Unangemeldete auf `/login?callbackUrl=…` um; öffentliche Pfade via `lib/publicRoutes`.
-    - **Frontend:** gestylte `/login`-Seite, `signIn`/`signOut` im Account-Flyout der Nav.
-- **Referenz:** Account-Flyout-Screenshot in [Kap. 3.4.1](#341-entwurf-design).
-- **Aus Evaluation abgeleitet?:** Nein — eigenständige Funktions-Erweiterung.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Vollständiger **Login mit Google** via **Auth.js**. Geschützte Bereiche (z. B. *Meine Suchen*) nur angemeldet erreichbar; Suchen an eine Nutzeridentität bindbar. |
+| **Umsetzung** | • Config `src/auth.ts` (Google-Provider, JWT-Sessions, `session`-Callback → Google-`sub` als `user.id`)<br>• Route-Guard `src/hooks.server.ts` + `+layout.server.ts` → Redirect auf `/login?callbackUrl=…`; öffentliche Pfade via `lib/publicRoutes`<br>• Frontend: gestylte `/login`, `signIn`/`signOut` im Account-Flyout |
+| **Referenz** | Account-Flyout-Screenshot in [Kap. 3.4.1](#341-entwurf-design) |
+| **Aus Evaluation?** | Nein — eigenständige Funktions-Erweiterung |
 
 ### 4.3 Dark Mode (site-weit)
 
-- **Beschreibung & Nutzen:** Umschaltbarer **Dark Mode**, der **auf der ganzen Website** greift und die Einstellung in *
-  *`sessionStorage`** hält (flackerfreies Anwenden vor dem ersten Paint).
-- **Wo umgesetzt:**
-    - **Frontend:** Toggle im **Account-Flyout** (`Nav.svelte`); Theme-Store `src/lib/stores/theme.ts`.
-    - **Styling:** `darkMode: 'class'` (Tailwind) + globale `.dark`-Overrides in `app.css` (Neutraltöne **und** farbige
-      Badges abgedunkelt); Pre-Paint-Script in `app.html`.
-- **Referenz:** Dark-Mode-Screenshots in [Kap. 3.4.1](#341-entwurf-design).
-- **Aus Evaluation abgeleitet?:** ✅ **Ja** — Issue #3.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Umschaltbarer **Dark Mode**, der **site-weit** greift und die Einstellung in **`sessionStorage`** hält (flackerfrei vor dem ersten Paint). |
+| **Umsetzung** | • Frontend: Toggle im Account-Flyout (`Nav.svelte`); Theme-Store `theme.ts`<br>• Styling: `darkMode: 'class'` + globale `.dark`-Overrides in `app.css` (Neutraltöne **und** farbige Badges); Pre-Paint-Script in `app.html` |
+| **Referenz** | Dark-Mode-Screenshots in [Kap. 3.4.1](#341-entwurf-design) |
+| **Aus Evaluation?** | ✅ Ja — Issue #5 |
 
 ### 4.4 Zusätzliche Filter: Karosserie · Farbe · Zustand
 
-- **Beschreibung & Nutzen:** Der Fragebogen erfasst zusätzlich **Karosserieform**, **Farbe** und **Zustand (
-  Neu/Gebraucht/Egal)**; diese fliessen als harte Filter bzw. Soft-Score in das Matching ein und erscheinen als
-  Filter-Chips in der Ergebnisliste.
-- **Wo umgesetzt:**
-    - **Frontend:** Steps `budget` (Zustand), `antrieb` (Karosserie), `ausstattung` (Farbe); Filter-Chips in
-      `ergebnisse/+page.svelte`.
-    - **Logik:** `getRelevantOffers()` / `scoreForColor()` in `matching.ts` (inkl. **`normalizeColor()`**, das rohe
-      Farbstrings wie „Schwarz"/„black" auf Filter-Keys mappt).
-- **Referenz:** Filter-Chips-Logik in `ergebnisse/+page.svelte`.
-- **Aus Evaluation abgeleitet?:** ✅ **Ja** — Issue #2.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Fragebogen erfasst zusätzlich **Karosserieform**, **Farbe** und **Zustand** (Neu/Gebraucht/Egal); fliessen als harte Filter bzw. Soft-Score ins Matching und als Filter-Chips in die Ergebnisliste. |
+| **Umsetzung** | • Frontend: Steps `budget` (Zustand), `antrieb` (Karosserie), `ausstattung` (Farbe); Filter-Chips in `ergebnisse/+page.svelte`<br>• Logik: `getRelevantOffers()` / `scoreForColor()` in `matching.ts` (inkl. `normalizeColor()` für rohe Farbstrings wie „Schwarz"/„black") |
+| **Referenz** | `ergebnisse/+page.svelte`, `matching.ts` |
+| **Aus Evaluation?** | ✅ Ja — Issues #2–#4 |
 
 ### 4.5 Reset der Eingaben bei neuer Suche
 
-- **Beschreibung & Nutzen:** Beim Start einer neuen Suche werden alte Eingaben zurückgesetzt — verhindert irritierende
-  „Geister-Filter".
-- **Wo umgesetzt:** `clearSearchInputs()` in `src/lib/stores/questionnaire.ts`, ausgelöst über den „Auto finden"
-  -Einstieg.
-- **Aus Evaluation abgeleitet?:** ✅ **Ja** — Issue #1.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Beim Start einer neuen Suche werden alte Eingaben zurückgesetzt — verhindert irritierende „Geister-Filter". |
+| **Umsetzung** | `clearSearchInputs()` in `src/lib/stores/questionnaire.ts`, ausgelöst über den „Auto finden"-Einstieg |
+| **Referenz** | `src/lib/stores/questionnaire.ts` |
+| **Aus Evaluation?** | ✅ Ja — Issue #1 |
 
 ### 4.6 Qualitätssicherung durch Tests
 
-- **Beschreibung & Nutzen:** Automatisierte Tests sichern die fehleranfälligsten Stellen ab.
-- **Wo umgesetzt:** **Vitest** für die Matching-Logik (`matching.test.ts`, u. a. harte Filter, Score-Grenzen,
-  Farb-Normalisierung); Scraper mit **Offline-`verify`** (HTML-Fixtures) und **`coverage`/`check-fields`** (
-  Daten-Vollständigkeit).
-- **Aus Evaluation abgeleitet?:** Nein — Prozess-/Qualitäts-Erweiterung.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Automatisierte Tests sichern die fehleranfälligsten Stellen ab. |
+| **Umsetzung** | • **Vitest** für die Matching-Logik (`matching.test.ts`: harte Filter, Score-Grenzen, Farb-Normalisierung)<br>• Scraper: Offline-`verify` (HTML-Fixtures) + `coverage`/`check-fields` (Daten-Vollständigkeit) |
+| **Referenz** | `matching.test.ts`, `scraper/src/verify-template.ts` |
+| **Aus Evaluation?** | Nein — Prozess-/Qualitäts-Erweiterung |
 
 ### 4.7 Persistenz via `sessionStorage` & UX-Feinschliff
 
-- **Beschreibung & Nutzen:** Fragebogen-Eingaben überleben Reloads (Reload-fest auf der Ergebnisseite). Zusätzlich aus
-  dem Testing gezielte UX-Verbesserungen: **sticky Navigation**, an den **Datentyp angepasste Eingabefelder**, *
-  *Progress-Bar**, prägnante **Match-Score-Wirkung**.
-- **Wo umgesetzt:** `questionnaire.ts` (`persistSearchInputs`), diverse Komponenten.
-- **Aus Evaluation abgeleitet?:** Teilweise — UX-Feinschliff durch Beobachtungen im Testing.
+| Aspekt | Details |
+|---|---|
+| **Nutzen** | Fragebogen-Eingaben überleben Reloads (Reload-fest). Zusätzlich UX-Feinschliff aus dem Testing: **sticky Navigation**, an den **Datentyp angepasste Eingabefelder**, **Progress-Bar**, prägnante **Match-Score-Wirkung**. |
+| **Umsetzung** | • `questionnaire.ts` (`persistSearchInputs`) — Eingaben in `sessionStorage`<br>• `theme.ts` — Dark-Mode-Präferenz in `sessionStorage` (siehe [Kap. 4.3](#43-dark-mode-site-weit)) |
+| **Referenz** | `src/lib/stores/` |
+| **Aus Evaluation?** | Teilweise — UX-Feinschliff durch Beobachtungen im Testing |
 
 ---
 
@@ -568,20 +602,23 @@ Aus Evaluation abgeleitet?*
 
 ### Repository & Struktur
 
+**Repository:** <https://github.com/savethedavee/prototyping-ln>
+
 Monorepo mit klarer Trennung: **`autofinder/`** (App) · **`scraper/`** (eigenständiges Tool) · **`context/`** (sämtliche
 Artefakte: Skizzen, Mockups, Workflows, Handouts, Screenshots).
 
-> 🟡 **Von dir auszufüllen:** GitHub-Repository-URL.
-
 ### Issue-Management
 
-Aus den Phasen **3.1 / 3.2 / 3.3** wurde ein Arbeitsplan abgeleitet (siehe Roadmap in [
+Aus den Phasen 3.1 / 3.2 / 3.3 wurde ein Arbeitsplan abgeleitet (siehe Roadmap in [
 `context/context.md`](context/context.md)). Dieser wurde **iterativ** abgearbeitet und laufend aufgefrischt, bis der
 definierte Umfang erreicht war. Aus der Evaluation entstandene Findings wurden als priorisierte Verbesserungen in den
 Plan zurückgespielt ([Kap. 3.5](#35-validate)).
 
-> 🟡 **Optional für mehr Punkte:** Falls GitHub Issues / ein Projektboard genutzt wurde, hier verlinken (Screenshot des
-> Boards wirkt stark).
+Konkret wurde für alle funktionalen und technischen Features ein eigenes Issue erfasst und anschliessend nach
+Priorität abgearbeitet — von den Kernfunktionen (Fragebogen, Matching, Ergebnisliste) über die Persistenz bis zu den
+Erweiterungen (Scraper, Auth, Dark Mode). Das folgende Board zeigt diesen iterativen Stand:
+
+![Issue-Board mit den iterativ abgearbeiteten Aufgaben](context/images/artefakte/issue_board.png)
 
 ### Commit-Praxis
 
@@ -597,9 +634,9 @@ Commits folgen den **[Conventional Commits](https://www.conventionalcommits.org/
 - **Eingesetztes Tool:** **Claude Code** (Anthropic), Modelle **Opus 4.6 / 4.7 / 4.8**.
 - **Zweck & Umfang:** Unterstützung beim Ausprogrammieren von Komponenten, Refactorings, Tests sowie bei der
   Aufbereitung dieser Dokumentation. Architektur-, Design- und Tech-Stack-Entscheidungen wurden eigenständig getroffen;
-  durch mehrjähriger Erfahrung im Web-/Fullstack-Development wurde auch ohne KI-Agent programmiert.
+  dank mehrjähriger Erfahrung im Web-/Fullstack-Development wurde auch ohne KI-Agent programmiert.
 - **Eigene Leistung (Abgrenzung):** Problemanalyse, Konzept, Skizzen, Mockup, Datenmodell, Match-Logik-Design,
-  Scraper-Idee, Evaluation und alle inhaltlichen Entscheide stammen von mir. KI-Output wurde kritisch geprüft**, gegen
+  Scraper-Idee, Evaluation und alle inhaltlichen Entscheide stammen von mir. KI-Output wurde **kritisch geprüft**, gegen
   bekannte Patterns gespiegelt, Code Smells aufgedeckt und Redundanz minimiert.
 
 ### 6.2 Prompt-Vorgehen
@@ -609,21 +646,36 @@ Grundlegendes Vorgehen (iterativ):
 1. **Lösungsvarianten** erarbeiten lassen und **abwägen**.
 2. Favorisierte Variante **genauer ausarbeiten**.
 3. **Iterativ umsetzen** mit stetigem Feedback zu **Code-Qualität, Funktionalität und UX**.
-4. **Kontextquellen** versioniert bereitstellen: `context/`-Dateien (`context.md`, `design-decisions.md`,
-   `screen-reference.md`) und schrittweise **Prompt-Rezepte** in [`context/prompts.md`](context/prompts.md).
+4. **Kontextquellen** bereitstellen und pflegen: `context/`-Dateien (`context.md`, `design-decisions.md`,
+   `screen-reference.md`).
 
-> Konkrete Prompts dienen nur als Beispiele; massgeblich ist das beschriebene Vorgehen. Quellen/Urheberrecht:
-> generierter Code wurde verifiziert und an das Projekt angepasst.
 
 ### 6.3 Reflexion
 
-- **Nutzen:** deutliche Geschwindigkeit bei Boilerplate, Refactorings und Tests; gute Sparrings-Funktion beim Abwägen
-  von Varianten.
-- **Grenzen:** KI trifft keine verlässlichen Produkt-/UX-Entscheide — diese brauchen menschliches Urteil und
-  Nutzerfeedback.
-- **Qualitätssicherung:** konsequentes Review, automatisierte Tests, `svelte-check`/TypeScript, Conventional Commits.
+#### Was gut funktioniert hat
 
-> 🟡 **Optional:** 2–3 Sätze persönliche Reflexion ergänzen (was lief gut, was würdest du anders machen).
+- **Usability-Testing als Iterationszyklus:** Der Nutzertest war der wertvollste Schritt. Er deckte konkrete Schwächen
+  auf (nicht zurückgesetzte Eingaben, fehlende Filter), die ich gezielt behoben und in einer **zweiten Testrunde** erneut
+  geprüft habe — aus einer Momentaufnahme wurde so eine echte Verbesserungsschleife.
+- **KI bei klar umrissenen Aufgaben:** Beim Ausprogrammieren klar definierter Aufgaben (Komponenten, Refactorings,
+  Tests) war die KI sehr effizient und schuf Freiraum für Konzept, UX und Datenqualität.
+- **TypeScript als Sicherheitsnetz:** Das typisierte Datenmodell (`CarModel`/`CarOffer`) führte zu robusterem Code und
+  fing viele Fehler bereits zur Entwicklungszeit ab.
+
+#### Verbesserungspotenzial & Learnings
+
+- **Scraper vs. Bot-Schutz:** Der Scraper wurde von AutoScout24 wiederholt **blockiert** (Bot-/Cloudflare-Schutz) und
+  musste mehrfach nachgebessert werden (Stealth-Plugin, realistische Browser-Signale). Learning: Bei fremden Quellen
+  früher eine robuste Strategie einplanen und Aufwand grosszügiger schätzen.
+- **Aufwändige Datenaufbereitung:** Die HTML-/Datenanalyse der Inserate war **intensiv und zeitaufwändig**, bis verlässlich
+  saubere, strukturierte Daten entstanden (JSON-LD + Label-Mapping in `normalize.ts`).
+- **KI kritisch behandeln:** Die KI lieferte **nicht selten Code Smells oder redundanten Code**. Jeder Beitrag musste
+  **kritisch geprüft**, gegen bekannte Patterns gespiegelt und vereinfacht werden. Abgesichert wurde dies durch
+  automatisierte **Tests** (Vitest), **`svelte-check`/TypeScript** und eine saubere **Commit-Historie**.
+
+> **Fazit:** KI ist ein starker Beschleuniger für Routinearbeit, ersetzt aber weder fachliche Entscheidungen noch
+> sorgfältiges Review — und bei nicht-standardisierten Problemen (Scraping) bleibt die eigene Ingenieurleistung
+> ausschlaggebend.
 
 ---
 
@@ -637,8 +689,6 @@ Grundlegendes Vorgehen (iterativ):
 - **Datenquelle:** AutoScout24.ch (öffentliche Inserate, via Scraper). Modell-/Inseratsdaten und Bilder gehören den
   jeweiligen Rechteinhabern; Nutzung ausschliesslich zu **Prototyp-/Studienzwecken**.
 
-> 🟡 **Zu prüfen:** rechtlicher Hinweis zum Scraping/zur Bildnutzung (Urheberrecht) — kurz festhalten, dass es sich um
-> einen nicht-kommerziellen Studienprototyp handelt.
 
 ### Testskript & Materialien
 
@@ -651,4 +701,3 @@ Grundlegendes Vorgehen (iterativ):
 - Projektkontext & Roadmap: [`context/context.md`](context/context.md)
 - Designentscheide: [`context/design-decisions.md`](context/design-decisions.md)
 
-> 🟡 **Von dir auszufüllen:** Link zur Rohdaten-/Auswertungsdatei der Evaluation (falls als separate Datei vorhanden).
